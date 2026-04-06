@@ -18,7 +18,7 @@ app.secret_key = "secret123"
 
 # MongoDB Connection
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client['myshop_db']
+db = client['PonnoSebaa']
 products_db = db.products
 banners_db = db.banners
 orders_db = db.orders
