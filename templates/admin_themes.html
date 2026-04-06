@@ -1,0 +1,210 @@
+{% extends "admin_base.html" %} 
+
+{% block content %}
+<style>
+    :root {
+        --brand-teal: #1c6b6b;
+        --brand-gold: #d4a044;
+        --brand-dark: #0d2b2b;
+        --brand-light: #f1f5f5;
+    }
+
+    /* Card Styling */
+    .theme-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        border: 2px solid transparent !important;
+        background: #fff;
+        border-radius: 1.5rem !important;
+        overflow: hidden;
+    }
+    
+    .theme-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08) !important;
+        border-color: rgba(28, 107, 107, 0.2) !important;
+    }
+
+    /* Active State */
+    .active-theme {
+        border-color: var(--brand-teal) !important;
+        background-color: #f0fafa;
+        box-shadow: 0 10px 30px rgba(28, 107, 107, 0.1) !important;
+    }
+
+    .active-badge {
+        display: none;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--brand-teal);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        z-index: 5;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .active-theme .active-badge {
+        display: block;
+        animation: fadeInDown 0.3s ease;
+    }
+
+    /* Preview Box Enhancements */
+    .theme-preview {
+        height: 140px;
+        margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Theme Specific Gradients */
+    .bg-ponno-default { background: linear-gradient(135deg, var(--brand-dark), var(--brand-teal)); }
+    .bg-ponno-winter  { background: linear-gradient(135deg, #e0f2fe, #7dd3fc); }
+    .bg-ponno-summer  { background: linear-gradient(135deg, #fff7ed, #fb923c); }
+    .bg-ponno-eid     { background: linear-gradient(135deg, #064e3b, #059669); }
+    .bg-ponno-victory { background: linear-gradient(135deg, #006a4e, #047857); }
+
+    .btn-save-appearance {
+        background: var(--brand-teal);
+        border: none;
+        padding: 1rem 3rem;
+        transition: 0.3s;
+    }
+
+    .btn-save-appearance:hover {
+        background: var(--brand-dark);
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px rgba(13, 43, 43, 0.2);
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row mb-5 text-center">
+        <div class="col-12">
+            <h2 class="fw-bold display-6 text-dark">
+                <i class="fa-solid fa-wand-magic-sparkles me-2 text-teal"></i>Store <span class="text-teal">Appearance</span>
+            </h2>
+            <p class="text-muted">Instantly transform your storefront vibe for seasons or festivals.</p>
+            <div style="width: 60px; height: 4px; background: var(--brand-gold); margin: 20px auto; border-radius: 10px;"></div>
+        </div>
+    </div>
+
+    <form action="{{ url_for('update_theme') }}" method="POST" id="themeForm">
+        <div class="row g-4 justify-content-center">
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card theme-card h-100 border-0 shadow-sm {% if current_theme == 'default' %}active-theme{% endif %}" onclick="selectTheme(this, 'default')">
+                    <span class="active-badge"><i class="fa-solid fa-check me-1"></i> Live</span>
+                    <div class="card-body p-4 text-center">
+                        <div class="theme-preview bg-ponno-default mb-4">
+                            <span class="text-white fw-bold fs-5">Ponno Sebaa</span>
+                            <small class="text-white-50">Official Branding</small>
+                        </div>
+                        <h5 class="fw-bold">Default Classic</h5>
+                        <p class="small text-muted mb-0">The signature Teal & Gold professional aesthetic.</p>
+                        <input class="d-none" type="radio" name="theme" value="default" {% if current_theme == 'default' %}checked{% endif %}>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card theme-card h-100 border-0 shadow-sm {% if current_theme == 'winter' %}active-theme{% endif %}" onclick="selectTheme(this, 'winter')">
+                    <span class="active-badge"><i class="fa-solid fa-check me-1"></i> Live</span>
+                    <div class="card-body p-4 text-center">
+                        <div class="theme-preview bg-ponno-winter mb-4">
+                            <i class="fa-solid fa-snowflake text-primary mb-2 fs-3"></i>
+                            <span class="text-primary fw-bold">Winter Frost ❄️</span>
+                        </div>
+                        <h5 class="fw-bold">Arctic Chill</h5>
+                        <p class="small text-muted mb-0">Cool ice tones with gentle snowfall background effects.</p>
+                        <input class="d-none" type="radio" name="theme" value="winter" {% if current_theme == 'winter' %}checked{% endif %}>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card theme-card h-100 border-0 shadow-sm {% if current_theme == 'summer' %}active-theme{% endif %}" onclick="selectTheme(this, 'summer')">
+                    <span class="active-badge"><i class="fa-solid fa-check me-1"></i> Live</span>
+                    <div class="card-body p-4 text-center">
+                        <div class="theme-preview bg-ponno-summer mb-4">
+                            <i class="fa-solid fa-sun text-white mb-2 fs-3"></i>
+                            <span class="text-white fw-bold">Summer Vibe ☀️</span>
+                        </div>
+                        <h5 class="fw-bold">Sun-Kissed</h5>
+                        <p class="small text-muted mb-0">Warm oranges and tropical energy for the hot season.</p>
+                        <input class="d-none" type="radio" name="theme" value="summer" {% if current_theme == 'summer' %}checked{% endif %}>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card theme-card h-100 border-0 shadow-sm {% if current_theme == 'eid' %}active-theme{% endif %}" onclick="selectTheme(this, 'eid')">
+                    <span class="active-badge"><i class="fa-solid fa-check me-1"></i> Live</span>
+                    <div class="card-body p-4 text-center">
+                        <div class="theme-preview bg-ponno-eid mb-4">
+                            <i class="fa-solid fa-moon text-warning mb-2 fs-3"></i>
+                            <span class="text-warning fw-bold">Eid Mubarak ✨</span>
+                        </div>
+                        <h5 class="fw-bold">Eid Festive</h5>
+                        <p class="small text-muted mb-0">Royal Emerald and Gold accents with crescent motifs.</p>
+                        <input class="d-none" type="radio" name="theme" value="eid" {% if current_theme == 'eid' %}checked{% endif %}>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card theme-card h-100 border-0 shadow-sm {% if current_theme == 'celebration' %}active-theme{% endif %}" onclick="selectTheme(this, 'celebration')">
+                    <span class="active-badge"><i class="fa-solid fa-check me-1"></i> Live</span>
+                    <div class="card-body p-4 text-center">
+                        <div class="theme-preview bg-ponno-victory mb-4">
+                            <div style="width:60px; height:60px; background:#f42a41; border-radius:50%; position:absolute; z-index:1;"></div>
+                            <i class="fa-solid fa-flag text-white mb-2 fs-3" style="z-index:2;"></i>
+                            <span class="text-white fw-bold" style="z-index:2;">PROUDLY BD 🇧🇩</span>
+                        </div>
+                        <h5 class="fw-bold">Victory Day</h5>
+                        <p class="small text-muted mb-0">Patriotic Red and Green theme for National Days.</p>
+                        <input class="d-none" type="radio" name="theme" value="celebration" {% if current_theme == 'celebration' %}checked{% endif %}>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-5 text-center">
+            <button type="submit" class="btn btn-save-appearance text-white btn-lg rounded-pill fw-bold shadow-lg">
+                <i class="fa-solid fa-cloud-arrow-up me-2"></i> Update Storefront
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function selectTheme(card, value) {
+        // Remove active class from all
+        document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active-theme'));
+        
+        // Select the clicked one
+        card.classList.add('active-theme');
+        
+        // Find and check the radio button
+        const radio = card.querySelector('input[type="radio"]');
+        radio.checked = true;
+        
+        // Feedback
+        console.log("Switching to theme:", value);
+    }
+</script>
+{% endblock %}

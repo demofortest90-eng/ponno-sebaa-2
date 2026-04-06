@@ -1,0 +1,171 @@
+{% extends "admin_base.html" %}
+{% set active_page = 'banners' %}
+
+{% block content %}
+<style>
+    :root {
+        --brand-teal: #1c6b6b;
+        --brand-gold: #d4a044;
+        --brand-dark: #0d2b2b;
+        --brand-light: #f1f5f5;
+    }
+
+    .text-teal { color: var(--brand-teal); }
+    .bg-soft-teal { background-color: rgba(28, 107, 107, 0.08); }
+    
+    .btn-brand-teal { 
+        background: var(--brand-teal); 
+        color: white; 
+        border: none;
+        transition: 0.3s;
+    }
+    .btn-brand-teal:hover { 
+        background: var(--brand-dark); 
+        color: white; 
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(28, 107, 107, 0.2);
+    }
+
+    .banner-preview-frame {
+        height: 160px;
+        position: relative;
+        overflow: hidden;
+        background: #eee;
+    }
+
+    .banner-card {
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid #eef2f2;
+        background: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .banner-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+    }
+
+    .upload-box {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 20px;
+        transition: 0.3s;
+        background: var(--brand-light);
+    }
+    
+    .upload-box:hover {
+        border-color: var(--brand-teal);
+        background: #fff;
+    }
+
+    .file-input-custom::-webkit-file-upload-button {
+        visibility: hidden;
+        display: none;
+    }
+    .file-input-custom::before {
+        content: '📁 Browse Files';
+        display: inline-block;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 50px;
+        padding: 5px 15px;
+        outline: none;
+        white-space: nowrap;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 12px;
+        margin-right: 10px;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white position-sticky" style="top: 20px;">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-soft-teal p-2 rounded-3 me-3">
+                        <i class="fa-solid fa-images text-teal fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold m-0 text-dark">Hero <span class="text-teal">Banners</span></h5>
+                        <p class="text-muted small mb-0">Homepage visuals</p>
+                    </div>
+                </div>
+                
+                <form action="/admin/banners" method="POST" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing: 1px;">Graphic Asset</label>
+                        <div class="upload-box text-center">
+                            <i class="fa-solid fa-cloud-arrow-up text-teal fa-2x mb-2"></i>
+                            <input type="file" name="banner_image" class="form-control file-input-custom bg-transparent border-0" required>
+                            <div class="form-text x-small mt-2 text-muted">
+                                Recommended: <strong>1200 x 400px</strong><br>
+                                Format: JPG, PNG or WEBP
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-brand-teal w-100 fw-bold py-3 rounded-pill">
+                        <i class="fa-solid fa-plus-circle me-2"></i>Publish Banner
+                    </button>
+                </form>
+
+                <div class="mt-4 p-3 bg-light rounded-3">
+                    <div class="d-flex gap-2 small text-muted">
+                        <i class="fa-solid fa-circle-info text-teal mt-1"></i>
+                        <span>Banners appear in a slider format on the customer landing page. Use high-contrast images.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h6 class="fw-bold text-dark m-0">Live Banner Queue ({{ banners|length }})</h6>
+                    <span class="badge bg-soft-teal text-teal border border-teal border-opacity-10 px-3">Active Now</span>
+                </div>
+                
+                <div class="row g-4">
+                    {% for banner in banners %}
+                    <div class="col-md-6">
+                        <div class="banner-card shadow-sm">
+                            <div class="banner-preview-frame">
+                                <img src="{{ banner.image_url }}" class="w-100 h-100" style="object-fit: cover;" alt="Banner">
+                                <div class="position-absolute top-0 end-0 p-2">
+                                    <span class="badge bg-dark bg-opacity-50 blur-filter small">Slide #{{ loop.index }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 d-flex justify-content-between align-items-center border-top">
+                                <div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">LAUNCH DATE</div>
+                                    <span class="small fw-bold text-dark">{{ banner.created_at.strftime('%d %b, %Y') }}</span>
+                                </div>
+                                
+                                <form action="/admin/delete_banner/{{ banner._id }}" method="POST" onsubmit="return confirm('Remove this visual from the homepage?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3 fw-bold small">
+                                        <i class="fa-solid fa-trash-can me-1"></i> Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    {% if not banners %}
+                    <div class="col-12 text-center py-5">
+                        <div class="bg-light d-inline-block p-4 rounded-circle mb-3">
+                            <i class="fa-regular fa-image fa-3x text-muted opacity-25"></i>
+                        </div>
+                        <h5 class="text-muted fw-bold">No Active Visuals</h5>
+                        <p class="small text-muted">Your homepage looks a bit empty. Upload a banner to engage customers.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

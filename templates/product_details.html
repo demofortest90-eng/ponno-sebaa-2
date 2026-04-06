@@ -1,0 +1,789 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    :root {
+        --ps-teal: #0d9488;
+        --ps-teal-deep: #0f766e;
+        --ps-teal-dark: #134e4a;
+        --ps-emerald: #059669;
+        --ps-gold: #f59e0b;
+        --ps-gold-light: #fbbf24;
+        --ps-dark: #0c1220;
+        --ps-surface: #f8fafc;
+        --ps-surface-warm: #fefce8;
+        --ps-border: rgba(15, 23, 42, 0.06);
+        --ps-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+        --ps-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+        --ps-shadow-lg: 0 20px 50px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+        --ps-shadow-xl: 0 25px 60px rgba(13,148,136,0.12), 0 10px 25px rgba(0,0,0,0.06);
+        --ps-radius-sm: 10px;
+        --ps-radius-md: 16px;
+        --ps-radius-lg: 22px;
+        --ps-radius-xl: 28px;
+        --ps-transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-fast: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ═══════════════ BREADCRUMB ═══════════════ */
+    .ps-breadcrumb {
+        display: flex; align-items: center; gap: 8px;
+        padding: 0; margin-bottom: 32px;
+        list-style: none; font-size: 0.82rem;
+    }
+    .ps-breadcrumb li { display: flex; align-items: center; gap: 8px; }
+    .ps-breadcrumb a {
+        color: #94a3b8; text-decoration: none; font-weight: 500;
+        transition: var(--ps-transition-fast);
+    }
+    .ps-breadcrumb a:hover { color: var(--ps-teal); }
+    .ps-breadcrumb .ps-sep { color: #cbd5e1; font-size: 0.7rem; }
+    .ps-breadcrumb .ps-current {
+        color: var(--ps-dark); font-weight: 700;
+        max-width: 200px; white-space: nowrap;
+        overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ═══════════════ IMAGE GALLERY ═══════════════ */
+    .ps-gallery-card {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        overflow: hidden;
+        box-shadow: var(--ps-shadow-sm);
+        transition: var(--ps-transition);
+    }
+
+    .ps-main-viewer {
+        position: relative;
+        background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
+        border-radius: var(--ps-radius-lg);
+        overflow: hidden;
+    }
+    .ps-main-viewer .ratio { border-radius: var(--ps-radius-lg); }
+
+    .ps-main-viewer img {
+        width: 100%; height: 100%;
+        object-fit: contain; padding: 32px;
+        transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+    }
+    .ps-main-viewer:hover img { transform: scale(1.04); }
+
+    .ps-main-viewer iframe {
+        width: 100%; height: 100%;
+        border: none; border-radius: var(--ps-radius-lg);
+    }
+
+    /* Zoom lens effect */
+    .ps-zoom-hint {
+        position: absolute; bottom: 16px; right: 16px;
+        width: 36px; height: 36px; border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(8px);
+        display: flex; align-items: center; justify-content: center;
+        color: #64748b; font-size: 0.75rem;
+        opacity: 0; transition: var(--ps-transition);
+        pointer-events: none; z-index: 2;
+    }
+    .ps-main-viewer:hover .ps-zoom-hint { opacity: 1; }
+
+    /* Discount badge */
+    .ps-savings-badge {
+        position: absolute; top: 20px; right: 20px; z-index: 3;
+        display: flex; flex-direction: column; align-items: center;
+        padding: 12px 16px; border-radius: 14px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white; box-shadow: 0 8px 24px rgba(239,68,68,0.3);
+    }
+    .ps-savings-pct { font-size: 1.2rem; font-weight: 900; line-height: 1; }
+    .ps-savings-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+
+    /* Thumbnails */
+    .ps-thumbs-row {
+        display: flex; gap: 10px;
+        padding: 16px 4px 4px;
+        overflow-x: auto; scrollbar-width: none;
+    }
+    .ps-thumbs-row::-webkit-scrollbar { display: none; }
+
+    .ps-thumb {
+        min-width: 76px; height: 76px;
+        border-radius: var(--ps-radius-sm);
+        border: 2px solid var(--ps-border);
+        cursor: pointer; transition: var(--ps-transition);
+        background: white; padding: 6px;
+        position: relative; overflow: hidden;
+    }
+    .ps-thumb img {
+        width: 100%; height: 100%;
+        object-fit: contain; border-radius: 6px;
+        transition: var(--ps-transition);
+    }
+    .ps-thumb::after {
+        content: ''; position: absolute; inset: 0;
+        border-radius: inherit;
+        box-shadow: inset 0 0 0 2px transparent;
+        transition: box-shadow 0.3s ease;
+    }
+    .ps-thumb:hover { border-color: rgba(13,148,136,0.3); transform: translateY(-2px); }
+    .ps-thumb:hover img { transform: scale(1.08); }
+    .ps-thumb.active {
+        border-color: var(--ps-teal);
+        background: rgba(13,148,136,0.04);
+        box-shadow: 0 4px 16px rgba(13,148,136,0.15);
+    }
+    .ps-thumb.active::after {
+        box-shadow: inset 0 0 0 2px var(--ps-teal);
+    }
+
+    .ps-thumb-video {
+        background: var(--ps-dark) !important;
+        border-color: rgba(255,255,255,0.1) !important;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .ps-thumb-video i { color: white; font-size: 1.4rem; position: relative; z-index: 1; }
+    .ps-thumb-video .ps-play-ring {
+        position: absolute; inset: 0;
+        border: 2px solid rgba(255,255,255,0.1);
+        border-radius: inherit;
+    }
+    .ps-thumb-video:hover { border-color: rgba(255,255,255,0.2) !important; }
+
+    /* ═══════════════ PRODUCT INFO ═══════════════ */
+    .ps-info-section {
+        position: relative;
+    }
+
+    .ps-trust-row {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .ps-trust-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 50px;
+        font-size: 0.7rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ps-trust-authentic {
+        background: rgba(13,148,136,0.08);
+        color: var(--ps-teal-dark);
+        border: 1px solid rgba(13,148,136,0.1);
+    }
+    .ps-trust-authentic i { color: var(--ps-gold); }
+    .ps-trust-stock {
+        background: rgba(5,150,105,0.08);
+        color: var(--ps-emerald);
+        border: 1px solid rgba(5,150,105,0.1);
+    }
+    .ps-trust-soldout {
+        background: rgba(239,68,68,0.08);
+        color: #ef4444;
+        border: 1px solid rgba(239,68,68,0.1);
+    }
+
+    .ps-product-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.85rem; font-weight: 700;
+        color: var(--ps-dark); line-height: 1.25;
+        margin-bottom: 16px;
+    }
+
+    .ps-rating-row {
+        display: flex; align-items: center; gap: 12px;
+        margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .ps-stars { display: flex; gap: 2px; }
+    .ps-stars i { color: var(--ps-gold); font-size: 0.8rem; }
+    .ps-stars i.empty { color: #e2e8f0; }
+    .ps-rating-num { font-weight: 800; color: var(--ps-dark); font-size: 0.9rem; }
+    .ps-rating-sep { width: 1px; height: 14px; background: #e2e8f0; }
+    .ps-sold-count { font-size: 0.8rem; color: #94a3b8; font-weight: 500; }
+
+    /* Price Block */
+    .ps-price-block {
+        background: white; border-radius: var(--ps-radius-lg);
+        border: 1px solid var(--ps-border);
+        padding: 24px; margin-bottom: 28px;
+        position: relative; overflow: hidden;
+        box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-price-block::before {
+        content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+        background: linear-gradient(180deg, var(--ps-gold), var(--ps-gold-light));
+        border-radius: 0 4px 4px 0;
+    }
+    .ps-price-block::after {
+        content: ''; position: absolute; top: -30px; right: -30px;
+        width: 100px; height: 100px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(245,158,11,0.06), transparent);
+    }
+    .ps-price-main {
+        font-size: 2.2rem; font-weight: 900;
+        color: var(--ps-teal-dark);
+        letter-spacing: -0.03em; line-height: 1;
+    }
+    .ps-price-currency { font-size: 1.3rem; font-weight: 700; }
+    .ps-price-old {
+        font-size: 0.95rem; color: #94a3b8;
+        text-decoration: line-through; font-weight: 500;
+    }
+    .ps-price-save {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 0.72rem; font-weight: 800;
+        color: #ef4444; background: #fef2f2;
+        padding: 4px 10px; border-radius: 50px;
+        border: 1px solid rgba(239,68,68,0.08);
+    }
+
+    /* Variants */
+    .ps-variant-section { margin-bottom: 28px; }
+    .ps-section-label {
+        font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.15em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 14px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .ps-section-label::after {
+        content: ''; flex: 1; height: 1px;
+        background: linear-gradient(90deg, var(--ps-border), transparent);
+    }
+
+    .ps-variant-input { display: none; }
+    .ps-variant-label {
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 2px solid #e2e8f0;
+        border-radius: 50px; padding: 10px 28px;
+        font-weight: 700; font-size: 0.85rem;
+        color: #64748b; cursor: pointer;
+        transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-variant-label::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .ps-variant-label span { position: relative; z-index: 1; }
+    .ps-variant-label:hover {
+        border-color: var(--ps-teal); color: var(--ps-teal);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13,148,136,0.12);
+    }
+    .ps-variant-input:checked + .ps-variant-label {
+        border-color: transparent; color: white;
+        box-shadow: 0 6px 20px rgba(13,148,136,0.3);
+        transform: translateY(-2px);
+    }
+    .ps-variant-input:checked + .ps-variant-label::before { opacity: 1; }
+
+    /* Description */
+    .ps-desc-block {
+        background: white; border-radius: var(--ps-radius-lg);
+        border: 1px solid var(--ps-border);
+        padding: 24px; margin-bottom: 32px;
+        box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-desc-text {
+        white-space: pre-line;
+        line-height: 1.85; color: #475569;
+        font-size: 0.92rem;
+    }
+
+    /* ═══════════════ ACTION BUTTONS ═══════════════ */
+    .ps-actions-desktop { margin-bottom: 12px; }
+    .ps-btn-buy {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 56px;
+        border: none; border-radius: var(--ps-radius-md);
+        background: var(--ps-dark); color: white;
+        font-size: 0.9rem; font-weight: 800;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-btn-buy::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-btn-buy span, .ps-btn-buy i { position: relative; z-index: 1; }
+    .ps-btn-buy:hover::before { opacity: 1; }
+    .ps-btn-buy:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(13,148,136,0.3);
+        color: white;
+    }
+    .ps-btn-buy .ps-buy-icon {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.8rem; transition: var(--ps-transition-bounce);
+    }
+    .ps-btn-buy:hover .ps-buy-icon { transform: rotate(-15deg) scale(1.15); }
+
+    .ps-btn-cart {
+        display: flex; align-items: center; justify-content: center;
+        width: 100%; height: 56px;
+        border: 2px solid #e2e8f0; border-radius: var(--ps-radius-md);
+        background: white; color: var(--ps-teal-dark);
+        font-size: 0.9rem; font-weight: 800;
+        cursor: pointer; transition: var(--ps-transition);
+        text-decoration: none;
+    }
+    .ps-btn-cart:hover {
+        border-color: var(--ps-teal); color: var(--ps-teal);
+        background: rgba(13,148,136,0.03);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(13,148,136,0.12);
+    }
+
+    .ps-btn-whatsapp {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 52px;
+        border: none; border-radius: var(--ps-radius-md);
+        background: linear-gradient(135deg, #25d366, #128c7e);
+        color: white; font-size: 0.88rem; font-weight: 700;
+        cursor: pointer; transition: var(--ps-transition);
+        text-decoration: none;
+    }
+    .ps-btn-whatsapp:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 28px rgba(37,211,102,0.3);
+        color: white;
+    }
+    .ps-btn-whatsapp .ps-wa-icon {
+        width: 26px; height: 26px; border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.85rem;
+    }
+
+    .ps-btn-unavailable {
+        width: 100%; height: 56px;
+        border: 2px dashed #e2e8f0; border-radius: var(--ps-radius-md);
+        background: var(--ps-surface); color: #94a3b8;
+        font-size: 0.88rem; font-weight: 700;
+        cursor: not-allowed;
+    }
+
+    /* Trust signals row */
+    .ps-trust-signals {
+        display: flex; gap: 16px; flex-wrap: wrap;
+        padding: 16px 0; margin-top: 8px;
+    }
+    .ps-trust-item {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.72rem; color: #94a3b8; font-weight: 600;
+    }
+    .ps-trust-item i {
+        width: 28px; height: 28px; border-radius: 8px;
+        background: var(--ps-surface);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; color: var(--ps-teal);
+    }
+
+    /* ═══════════════ MOBILE BOTTOM BAR ═══════════════ */
+    .ps-mobile-bar {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        z-index: 1050; padding: 12px 16px;
+        box-shadow: 0 -8px 30px rgba(0,0,0,0.08);
+        border-top: 1px solid var(--ps-border);
+    }
+    .ps-mobile-bar-inner {
+        display: flex; gap: 10px; align-items: center;
+        max-width: 600px; margin: 0 auto;
+    }
+    .ps-mobile-icon-btn {
+        width: 50px; height: 50px; flex-shrink: 0;
+        border-radius: var(--ps-radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.15rem; cursor: pointer;
+        transition: var(--ps-transition); text-decoration: none;
+        border: 1px solid var(--ps-border); background: white;
+    }
+    .ps-mobile-icon-btn i { position: relative; z-index: 1; }
+    .ps-mobile-icon-btn.wa-btn {
+        background: linear-gradient(135deg, #25d366, #128c7e);
+        border-color: transparent; color: white;
+    }
+    .ps-mobile-icon-btn.wa-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(37,211,102,0.3);
+        color: white;
+    }
+    .ps-mobile-icon-btn.cart-btn-m {
+        color: var(--ps-teal-dark);
+    }
+    .ps-mobile-icon-btn.cart-btn-m:hover {
+        border-color: var(--ps-teal);
+        color: var(--ps-teal);
+        transform: translateY(-3px);
+    }
+
+    .ps-mobile-buy {
+        flex: 1; height: 50px;
+        border: none; border-radius: var(--ps-radius-sm);
+        background: var(--ps-dark); color: white;
+        font-size: 0.82rem; font-weight: 800;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-mobile-buy::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .ps-mobile-buy span { position: relative; z-index: 1; }
+    .ps-mobile-buy:hover::before { opacity: 1; }
+    .ps-mobile-buy:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+        color: white;
+    }
+    .ps-mobile-buy.unavailable {
+        background: var(--ps-surface); color: #94a3b8;
+        cursor: not-allowed; border: 1px dashed #e2e8f0;
+    }
+    .ps-mobile-buy.unavailable::before { display: none; }
+    .ps-mobile-buy.unavailable:hover { transform: none; box-shadow: none; }
+
+    /* ═══════════════ ANIMATIONS ═══════════════ */
+    .ps-fade-up {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-fade-up.ps-visible { opacity: 1; transform: translateY(0); }
+    .ps-fade-left {
+        opacity: 0; transform: translateX(-28px);
+        transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-fade-left.ps-visible { opacity: 1; transform: translateX(0); }
+    .ps-fade-right {
+        opacity: 0; transform: translateX(28px);
+        transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-fade-right.ps-visible { opacity: 1; transform: translateX(0); }
+
+    @keyframes psImgSwap {
+        from { opacity: 0; transform: scale(0.96); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .ps-img-entering { animation: psImgSwap 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+    @keyframes psPricePop {
+        0% { transform: scale(1); }
+        40% { transform: scale(1.06); }
+        100% { transform: scale(1); }
+    }
+    .ps-price-pop { animation: psPricePop 0.35s ease; }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .ps-product-title { font-size: 1.5rem; }
+        .ps-price-main { font-size: 1.8rem; }
+        .ps-price-block { padding: 20px; }
+    }
+
+    @media (max-width: 767px) {
+        .ps-breadcrumb { margin-bottom: 20px; font-size: 0.75rem; }
+        .ps-breadcrumb .ps-current { max-width: 120px; }
+        .ps-gallery-card { border-radius: var(--ps-radius-lg); }
+        .ps-main-viewer { border-radius: var(--ps-radius-md); }
+        .ps-main-viewer img { padding: 20px; }
+        .ps-thumb { min-width: 64px; height: 64px; border-radius: 8px; padding: 5px; }
+        .ps-savings-badge { top: 12px; right: 12px; padding: 8px 12px; border-radius: 10px; }
+        .ps-savings-pct { font-size: 1rem; }
+        .ps-product-title { font-size: 1.3rem; margin-bottom: 12px; }
+        .ps-price-main { font-size: 1.6rem; }
+        .ps-price-block { padding: 16px; border-radius: var(--ps-radius-md); margin-bottom: 20px; }
+        .ps-variant-label { padding: 8px 20px; font-size: 0.8rem; }
+        .ps-desc-block { padding: 16px; border-radius: var(--ps-radius-md); margin-bottom: 24px; }
+        .ps-desc-text { font-size: 0.85rem; line-height: 1.7; }
+        .ps-trust-signals { gap: 10px; }
+        .ps-zoom-hint { display: none !important; }
+        main { padding-bottom: 90px; }
+    }
+
+    @media (max-width: 400px) {
+        .ps-mobile-icon-btn { width: 46px; height: 46px; }
+        .ps-mobile-buy { height: 46px; font-size: 0.75rem; }
+    }
+</style>
+
+<div class="container py-4 mb-5">
+    <ul class="ps-breadcrumb ps-fade-up">
+        <li><a href="/"><i class="fa-solid fa-house" style="font-size:0.7rem;"></i></a></li>
+        <li><span class="ps-sep"><i class="fa-solid fa-chevron-right"></i></span></li>
+        <li><a href="/category/{{ p.category|lower }}">{{ p.category }}</a></li>
+        <li><span class="ps-sep"><i class="fa-solid fa-chevron-right"></i></span></li>
+        <li><span class="ps-current">{{ p.title }}</span></li>
+    </ul>
+
+    <div class="row g-4 g-lg-5">
+        <!-- ══════ GALLERY ══════ -->
+        <div class="col-md-6 ps-fade-left">
+            <div class="ps-gallery-card">
+                <div class="ps-main-viewer" id="mainViewer">
+                    <div id="mainMediaWrapper" class="ratio ratio-1x1">
+                        <img src="{{ p.main_image }}" id="mainView" alt="{{ p.title }}">
+                    </div>
+                    <div class="ps-zoom-hint">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </div>
+                    {% if p.del_price and p.del_price|int > p.price|int %}
+                    <div class="ps-savings-badge">
+                        <span class="ps-savings-pct">-{{ ((p.del_price|int - p.price|int) / p.del_price|int * 100)|round|int }}%</span>
+                        <span class="ps-savings-label">Savings</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="ps-thumbs-row">
+                    <div class="ps-thumb active" onclick="swapToImage('{{ p.main_image }}', this)">
+                        <img src="{{ p.main_image }}" alt="Thumbnail">
+                    </div>
+                    {% if p.extra_images %}
+                        {% for img in p.extra_images %}
+                        <div class="ps-thumb" onclick="swapToImage('{{ img }}', this)">
+                            <img src="{{ img }}" alt="Thumbnail">
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if p.video_url %}
+                    <div class="ps-thumb ps-thumb-video" onclick="swapToVideo('{{ p.video_url }}', this)">
+                        <i class="fa-solid fa-play"></i>
+                        <div class="ps-play-ring"></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════ INFO ══════ -->
+        <div class="col-md-6 ps-fade-right">
+            <div class="ps-info-section" style="position: sticky; top: 100px;">
+                
+                <div class="ps-trust-row">
+                    <span class="ps-trust-pill ps-trust-authentic">
+                        <i class="fa-solid fa-certificate"></i> Genuine
+                    </span>
+                    {% if p.in_stock %}
+                        <span class="ps-trust-pill ps-trust-stock">
+                            <i class="fa-solid fa-bolt-lightning"></i> In Stock
+                        </span>
+                    {% else %}
+                        <span class="ps-trust-pill ps-trust-soldout">
+                            <i class="fa-solid fa-circle-xmark"></i> Sold Out
+                        </span>
+                    {% endif %}
+                </div>
+
+                <h1 class="ps-product-title">{{ p.title }}</h1>
+                
+                <div class="ps-rating-row">
+                    <div class="ps-stars">
+                        {% set rating = (p.rating if p.rating else '4.9')|float %}
+                        {% for i in range(5) %}
+                            {% if i < rating|int %}
+                                <i class="fa-solid fa-star"></i>
+                            {% elif i < rating %}
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                            {% else %}
+                                <i class="fa-regular fa-star empty"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="ps-rating-num">{{ p.rating if p.rating else '4.9' }}</span>
+                    <span class="ps-rating-sep"></span>
+                    <span class="ps-sold-count">
+                        <i class="fa-solid fa-bag-shopping me-1" style="font-size:0.7rem;"></i>
+                        {{ p.sold_count if p.sold_count else '120+' }} sold
+                    </span>
+                </div>
+
+                <div class="ps-price-block">
+                    <div class="d-flex align-items-end gap-3 flex-wrap">
+                        <span class="ps-price-main">
+                            <span class="ps-price-currency">৳</span><span id="livePrice">{{ p.price }}</span>
+                        </span>
+                        {% if p.del_price and p.del_price|int > p.price|int %}
+                            <del class="ps-price-old">৳{{ p.del_price }}</del>
+                            <span class="ps-price-save">
+                                <i class="fa-solid fa-arrow-down" style="font-size:0.6rem;"></i>
+                                Save ৳{{ p.del_price|int - p.price|int }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if p.variants %}
+                <div class="ps-variant-section">
+                    <div class="ps-section-label">Select Option</div>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for v in p.variants %}
+                        <div>
+                            <input type="radio" class="btn-check ps-variant-input" name="product_variant" id="v_{{ loop.index }}" 
+                                   value="{{ v.name }}" data-price="{{ v.price }}" {% if loop.first %}checked{% endif %}>
+                            <label class="ps-variant-label" for="v_{{ loop.index }}"><span>{{ v.name }}</span></label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="ps-desc-block">
+                    <div class="ps-section-label" style="margin-bottom: 14px;">Details</div>
+                    <div class="ps-desc-text">
+                        {% if p.description %}{{ p.description | safe }}{% else %}
+                        Premium quality product crafted for excellence. This authentic {{ p.title }} offers unmatched durability and modern design elements. Every detail has been carefully considered to deliver the best experience.
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="ps-trust-signals">
+                    <div class="ps-trust-item">
+                        <i class="fa-solid fa-truck-fast"></i>
+                        <span>Fast Delivery</span>
+                    </div>
+                    <div class="ps-trust-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Genuine Product</span>
+                    </div>
+                    <div class="ps-trust-item">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Easy Return</span>
+                    </div>
+                    <div class="ps-trust-item">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>Secure Payment</span>
+                    </div>
+                </div>
+
+                <div class="ps-actions-desktop d-none d-md-block">
+                    {% if p.in_stock %}
+                        <div class="row g-3 mb-3">
+                            <div class="col-8">
+                                <button onclick="handleOrder('checkout')" class="ps-btn-buy">
+                                    <span>Buy Now</span>
+                                    <span class="ps-buy-icon"><i class="fa-solid fa-bolt"></i></span>
+                                </button>
+                            </div>
+                            <div class="col-4">
+                                <button onclick="handleOrder('cart')" class="ps-btn-cart">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/8801400461284?text={{ 'Order: ' + p.title | urlencode }}" class="ps-btn-whatsapp">
+                            <span class="ps-wa-icon"><i class="fa-brands fa-whatsapp"></i></span>
+                            <span>Order via WhatsApp</span>
+                        </a>
+                    {% else %}
+                        <button class="ps-btn-unavailable" disabled>
+                            <i class="fa-solid fa-clock me-2"></i>Out of Stock
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Bottom Bar -->
+<div class="ps-mobile-bar d-md-none">
+    {% if p.in_stock %}
+    <div class="ps-mobile-bar-inner">
+        <a href="https://wa.me/8801400461284?text={{ 'Order: ' + p.title | urlencode }}" class="ps-mobile-icon-btn wa-btn" aria-label="WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <button onclick="handleOrder('cart')" class="ps-mobile-icon-btn cart-btn-m" aria-label="Add to Cart">
+            <i class="fa-solid fa-cart-plus"></i>
+        </button>
+        <button onclick="handleOrder('checkout')" class="ps-mobile-buy">
+            <span>Buy Now</span>
+        </button>
+    </div>
+    {% else %}
+    <div class="ps-mobile-bar-inner">
+        <button class="ps-mobile-buy unavailable" disabled>
+            <span>Unavailable</span>
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Scroll reveal
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('ps-visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.ps-fade-up, .ps-fade-left, .ps-fade-right').forEach(el => revealObs.observe(el));
+
+    const wrapper = document.getElementById('mainMediaWrapper');
+    const priceEl = document.getElementById('livePrice');
+
+    function swapToImage(src, el) {
+        wrapper.innerHTML = `<img src="${src}" alt="Product Image" class="ps-img-entering">`;
+        updateThumb(el);
+    }
+
+    function swapToVideo(url, el) {
+        let videoId = url.includes('v=') ? url.split('v=')[1].split('&')[0] : url.split('/').pop();
+        wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen style="width:100%;height:100%;border:none;border-radius:var(--ps-radius-md);"></iframe>`;
+        updateThumb(el);
+    }
+
+    function updateThumb(el) {
+        document.querySelectorAll('.ps-thumb').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // Variant price change
+    document.querySelectorAll('input[name="product_variant"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const newPrice = this.getAttribute('data-price');
+            if (priceEl && newPrice) {
+                priceEl.textContent = newPrice;
+                priceEl.classList.remove('ps-price-pop');
+                void priceEl.offsetWidth;
+                priceEl.classList.add('ps-price-pop');
+            }
+        });
+    });
+
+    function handleOrder(action) {
+        const selectedVariant = document.querySelector('input[name="product_variant"]:checked');
+        const variantValue = selectedVariant ? selectedVariant.value : "";
+        let url = `/add_to_cart/{{ p._id }}?variant=${encodeURIComponent(variantValue)}`;
+        if (action === 'checkout') url += "&next=checkout";
+        window.location.href = url;
+    }
+
+    // Button ripple effect
+    document.querySelectorAll('.ps-btn-buy, .ps-mobile-buy, .ps-btn-cart').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            Object.assign(ripple.style, {
+                position: 'absolute', borderRadius: '50%',
+                width: size + 'px', height: size + 'px',
+                left: (e.clientX - rect.left - size/2) + 'px',
+                top: (e.clientY - rect.top - size/2) + 'px',
+                background: 'rgba(255,255,255,0.25)',
+                transform: 'scale(0)', opacity: '1',
+                transition: 'transform 0.5s ease, opacity 0.5s ease',
+                pointerEvents: 'none', zIndex: '0'
+            });
+            this.appendChild(ripple);
+            requestAnimationFrame(() => { ripple.style.transform = 'scale(2)'; ripple.style.opacity = '0'; });
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+</script>
+
+{% endblock %}

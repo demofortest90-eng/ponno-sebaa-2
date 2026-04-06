@@ -1,0 +1,926 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap');
+
+    :root {
+        --ps-teal: #0d9488;
+        --ps-teal-deep: #0f766e;
+        --ps-teal-dark: #134e4a;
+        --ps-emerald: #059669;
+        --ps-gold: #f59e0b;
+        --ps-gold-light: #fbbf24;
+        --ps-dark: #0c1220;
+        --ps-surface: #f8fafc;
+        --ps-surface-warm: #fefce8;
+        --ps-border: rgba(15, 23, 42, 0.06);
+        --ps-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+        --ps-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+        --ps-shadow-lg: 0 20px 50px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+        --ps-shadow-xl: 0 25px 60px rgba(13,148,136,0.12), 0 10px 25px rgba(0,0,0,0.06);
+        --ps-radius-sm: 10px;
+        --ps-radius-md: 16px;
+        --ps-radius-lg: 22px;
+        --ps-radius-xl: 28px;
+        --ps-transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-fast: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ═══════════════ SECTION CARDS ═══════════════ */
+    .ps-form-card {
+        background: white;
+        border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-sm);
+        overflow: hidden;
+        transition: var(--ps-transition);
+    }
+    .ps-form-card:hover { box-shadow: var(--ps-shadow-md); }
+    .ps-form-body { padding: 36px; }
+
+    /* ═══════════════ STEP HEADER ═══════════════ */
+    .ps-step-header {
+        display: flex; align-items: center; gap: 16px;
+        margin-bottom: 28px;
+    }
+    .ps-step-badge {
+        width: 40px; height: 40px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; font-weight: 900; color: white;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        box-shadow: 0 6px 18px rgba(13,148,136,0.25);
+        flex-shrink: 0;
+    }
+    .ps-step-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0;
+    }
+    .ps-step-sub {
+        font-size: 0.72rem; color: #94a3b8; font-weight: 600;
+        margin: 2px 0 0; text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .ps-step-divider {
+        height: 1px; border: none;
+        background: linear-gradient(90deg, var(--ps-border), transparent);
+        margin: 0 0 36px 56px;
+    }
+
+    /* ═══════════════ FORM INPUTS ═══════════════ */
+    .ps-field-label {
+        display: block; font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 10px;
+    }
+    .ps-input {
+        width: 100%; padding: 14px 18px;
+        background: var(--ps-surface);
+        border: 2px solid transparent;
+        border-radius: var(--ps-radius-sm);
+        font-size: 0.9rem; font-weight: 600; color: var(--ps-dark);
+        transition: var(--ps-transition);
+        outline: none;
+    }
+    .ps-input::placeholder { color: #cbd5e1; font-weight: 400; }
+    .ps-input:hover { border-color: rgba(13,148,136,0.15); background: white; }
+    .ps-input:focus {
+        border-color: var(--ps-teal);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+    }
+    textarea.ps-input { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+    /* ═══════════════ PAYMENT OPTIONS ═══════════════ */
+    .ps-pay-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .ps-pay-option { position: relative; }
+    .ps-pay-option input { display: none; }
+    .ps-pay-card {
+        display: flex; flex-direction: column; align-items: center;
+        text-align: center; padding: 28px 20px;
+        background: white; border-radius: var(--ps-radius-lg);
+        border: 2px solid #e2e8f0;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+        text-decoration: none;
+    }
+    .ps-pay-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(13,148,136,0.03), rgba(5,150,105,0.03));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .ps-pay-card:hover { border-color: rgba(13,148,136,0.3); transform: translateY(-4px); box-shadow: var(--ps-shadow-md); }
+    .ps-pay-card:hover::before { opacity: 1; }
+
+    .ps-pay-option input:checked + .ps-pay-card {
+        border-color: var(--ps-teal);
+        background: rgba(13,148,136,0.02);
+        box-shadow: 0 8px 28px rgba(13,148,136,0.15);
+        transform: translateY(-4px);
+    }
+    .ps-pay-option input:checked + .ps-pay-card::before { opacity: 1; }
+
+    .ps-pay-check {
+        position: absolute; top: 12px; right: 12px;
+        width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #e2e8f0;
+        display: flex; align-items: center; justify-content: center;
+        transition: var(--ps-transition);
+        font-size: 0.55rem; color: transparent;
+    }
+    .ps-pay-option input:checked + .ps-pay-card .ps-pay-check {
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        border-color: transparent; color: white;
+    }
+
+    .ps-pay-icon {
+        width: 56px; height: 56px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; margin-bottom: 14px;
+        transition: var(--ps-transition-bounce);
+        position: relative; z-index: 1;
+    }
+    .ps-pay-option input:checked + .ps-pay-card .ps-pay-icon { transform: scale(1.1); }
+    .ps-pay-icon-cod { background: rgba(13,148,136,0.08); color: var(--ps-teal); }
+    .ps-pay-icon-digital { background: rgba(245,158,11,0.08); color: var(--ps-gold); }
+
+    .ps-pay-label {
+        font-size: 0.88rem; font-weight: 800; color: var(--ps-dark);
+        margin-bottom: 4px; position: relative; z-index: 1;
+    }
+    .ps-pay-desc {
+        font-size: 0.7rem; color: #94a3b8; font-weight: 500;
+        position: relative; z-index: 1;
+    }
+
+    /* ═══════════════ TRX BOX ═══════════════ */
+    .ps-trx-section {
+        max-height: 0; overflow: hidden; opacity: 0;
+        transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                    opacity 0.4s ease, margin 0.4s ease;
+        margin-top: 0;
+    }
+    .ps-trx-section.ps-open {
+        max-height: 300px; opacity: 1; margin-top: 20px;
+    }
+    .ps-trx-box {
+        background: white;
+        border-radius: var(--ps-radius-md);
+        border: 1px solid var(--ps-border);
+        padding: 24px; position: relative; overflow: hidden;
+        box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-trx-box::before {
+        content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+        background: linear-gradient(180deg, var(--ps-teal), var(--ps-emerald));
+        border-radius: 0 4px 4px 0;
+    }
+    .ps-trx-header {
+        display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .ps-trx-icon {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: rgba(13,148,136,0.08);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--ps-teal); font-size: 0.85rem;
+    }
+    .ps-trx-title { font-size: 0.88rem; font-weight: 800; color: var(--ps-dark); margin: 0; }
+    .ps-trx-hint {
+        font-size: 0.7rem; color: #94a3b8; margin-top: 10px; line-height: 1.5;
+    }
+
+    /* ═══════════════ PROMO CARD ═══════════════ */
+    .ps-promo-card {
+        background: white; border-radius: var(--ps-radius-lg);
+        border: 1px solid var(--ps-border);
+        padding: 24px; box-shadow: var(--ps-shadow-sm);
+        transition: var(--ps-transition);
+    }
+    .ps-promo-card:hover { box-shadow: var(--ps-shadow-md); }
+    .ps-promo-header {
+        display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .ps-promo-icon {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: var(--ps-surface-warm);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--ps-gold); font-size: 0.9rem;
+    }
+    .ps-promo-title { font-size: 0.88rem; font-weight: 800; color: var(--ps-dark); margin: 0; }
+    .ps-promo-input-wrap {
+        display: flex; gap: 10px;
+    }
+    .ps-promo-input {
+        flex: 1; padding: 12px 16px;
+        background: var(--ps-surface);
+        border: 2px solid transparent;
+        border-radius: var(--ps-radius-sm);
+        font-size: 0.85rem; font-weight: 700; color: var(--ps-dark);
+        text-transform: uppercase; letter-spacing: 0.08em;
+        outline: none; transition: var(--ps-transition);
+    }
+    .ps-promo-input:focus {
+        border-color: var(--ps-gold);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(245,158,11,0.08);
+    }
+    .ps-promo-btn {
+        padding: 12px 24px; border: none; border-radius: var(--ps-radius-sm);
+        background: var(--ps-dark); color: white;
+        font-size: 0.82rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        white-space: nowrap;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .ps-promo-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(12,18,32,0.2);
+    }
+    .ps-promo-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .ps-promo-msg {
+        margin-top: 12px; font-size: 0.78rem; font-weight: 700;
+        display: flex; align-items: center; gap: 6px;
+        min-height: 20px;
+    }
+    .ps-promo-msg-success { color: var(--ps-emerald); }
+    .ps-promo-msg-error { color: #ef4444; }
+    .ps-promo-msg i { font-size: 0.7rem; }
+
+    /* ═══════════════ SUMMARY ═══════════════ */
+    .ps-summary-card {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-md);
+        overflow: hidden; position: sticky; top: 100px;
+    }
+    .ps-summary-head {
+        padding: 24px 28px 0;
+    }
+    .ps-summary-title {
+        font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ps-dark); margin: 0;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .ps-summary-title::after {
+        content: ''; flex: 1; height: 1px; background: var(--ps-border);
+    }
+    .ps-summary-body { padding: 24px 28px; }
+
+    /* Items list */
+    .ps-items-list {
+        max-height: 260px; overflow-y: auto; margin-bottom: 20px;
+        scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent;
+    }
+    .ps-items-list::-webkit-scrollbar { width: 4px; }
+    .ps-items-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+    .ps-sum-item {
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--ps-border);
+    }
+    .ps-sum-item:last-child { border-bottom: none; }
+    .ps-sum-item-img {
+        width: 52px; height: 52px; border-radius: var(--ps-radius-sm);
+        object-fit: cover; flex-shrink: 0;
+        border: 1px solid var(--ps-border);
+        position: relative;
+    }
+    .ps-sum-item-qty {
+        position: absolute; top: -5px; right: -5px;
+        width: 20px; height: 20px; border-radius: 50%;
+        background: var(--ps-dark); color: white;
+        font-size: 0.55rem; font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        border: 2px solid white;
+    }
+    .ps-sum-item-info { flex: 1; min-width: 0; }
+    .ps-sum-item-name {
+        font-size: 0.78rem; font-weight: 700; color: var(--ps-dark);
+        margin: 0; line-height: 1.3;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ps-sum-item-variant {
+        font-size: 0.62rem; font-weight: 700; color: var(--ps-teal);
+        margin-top: 2px;
+    }
+    .ps-sum-item-unit {
+        font-size: 0.62rem; color: #94a3b8; margin-top: 1px;
+    }
+    .ps-sum-item-total {
+        font-size: 0.82rem; font-weight: 800; color: var(--ps-dark);
+        flex-shrink: 0;
+    }
+
+    /* Price breakdown */
+    .ps-price-breakdown {
+        background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+        padding: 18px; margin-bottom: 4px;
+    }
+    .ps-sum-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 8px 0;
+    }
+    .ps-sum-row + .ps-sum-row { border-top: 1px solid var(--ps-border); }
+    .ps-sum-label {
+        font-size: 0.82rem; color: #64748b; font-weight: 500;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .ps-sum-label i { font-size: 0.7rem; color: var(--ps-teal); }
+    .ps-sum-value {
+        font-size: 0.85rem; font-weight: 700; color: var(--ps-dark);
+    }
+    .ps-sum-free-badge {
+        font-size: 0.62rem; font-weight: 800; color: var(--ps-emerald);
+        background: rgba(5,150,105,0.08);
+        padding: 3px 10px; border-radius: 50px;
+        border: 1px solid rgba(5,150,105,0.08);
+    }
+    .ps-sum-discount-value {
+        color: var(--ps-emerald); font-weight: 800;
+    }
+
+    /* Total row */
+    .ps-total-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 20px 0 4px;
+        border-top: 2px solid var(--ps-border);
+        margin-top: 8px;
+    }
+    .ps-total-label {
+        font-size: 0.95rem; font-weight: 800; color: var(--ps-dark);
+    }
+    .ps-total-value {
+        font-size: 1.6rem; font-weight: 900;
+        color: var(--ps-teal-dark); line-height: 1;
+    }
+    .ps-total-currency { font-size: 0.95rem; font-weight: 700; }
+
+    /* Place Order Button */
+    .ps-btn-place {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 56px;
+        border: none; border-radius: var(--ps-radius-md);
+        background: var(--ps-dark); color: white;
+        font-size: 0.9rem; font-weight: 800;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+        margin-top: 24px;
+    }
+    .ps-btn-place::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-btn-place span, .ps-btn-place i { position: relative; z-index: 1; }
+    .ps-btn-place:hover::before { opacity: 1; }
+    .ps-btn-place:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(13,148,136,0.3);
+        color: white;
+    }
+    .ps-place-icon {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.75rem;
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-btn-place:hover .ps-place-icon { transform: translateX(4px); }
+
+    .ps-secure-note {
+        text-align: center; margin-top: 16px;
+        font-size: 0.68rem; color: #94a3b8; font-weight: 600;
+    }
+    .ps-secure-note i { color: var(--ps-teal); margin-right: 4px; }
+
+    /* ═══════════════ MODAL ═══════════════ */
+    .ps-modal-content {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-xl);
+        overflow: hidden;
+    }
+    .ps-modal-header {
+        padding: 28px 28px 0; border: none;
+    }
+    .ps-modal-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem; font-weight: 700;
+        color: var(--ps-dark);
+    }
+    .ps-modal-body { padding: 24px 28px; }
+    .ps-modal-footer { padding: 0 28px 28px; border: none; }
+
+    .ps-pay-amount {
+        text-align: center; margin-bottom: 24px;
+        padding: 16px; background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+    }
+    .ps-pay-amount-label {
+        font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.15em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 4px;
+    }
+    .ps-pay-amount-value {
+        font-size: 1.8rem; font-weight: 900;
+        color: var(--ps-teal-dark);
+    }
+    .ps-pay-amount-value .ps-total-currency { font-size: 1.1rem; }
+
+    .ps-payment-method-card {
+        display: flex; align-items: center; gap: 16px;
+        padding: 18px; background: white;
+        border: 1px solid var(--ps-border);
+        border-radius: var(--ps-radius-md);
+        margin-bottom: 14px; transition: var(--ps-transition);
+        box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-payment-method-card:hover { box-shadow: var(--ps-shadow-md); transform: translateY(-2px); }
+    .ps-pm-icon {
+        width: 48px; height: 48px; border-radius: 12px;
+        background: var(--ps-surface);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; overflow: hidden;
+    }
+    .ps-pm-icon img { width: 32px; height: 32px; object-fit: contain; }
+    .ps-pm-info { flex: 1; }
+    .ps-pm-type {
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: #94a3b8;
+    }
+    .ps-pm-number {
+        font-size: 1.05rem; font-weight: 900; color: var(--ps-dark);
+        font-family: 'Inter', monospace; letter-spacing: 0.5px;
+    }
+    .ps-copy-btn {
+        width: 40px; height: 40px; border-radius: 10px;
+        border: 1px solid var(--ps-border); background: white;
+        display: flex; align-items: center; justify-content: center;
+        color: #94a3b8; font-size: 0.8rem;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative;
+    }
+    .ps-copy-btn:hover { border-color: var(--ps-teal); color: var(--ps-teal); transform: scale(1.08); }
+    .ps-copy-btn.copied { border-color: var(--ps-emerald); color: var(--ps-emerald); background: rgba(5,150,105,0.05); }
+    .ps-copy-tooltip {
+        position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) scale(0);
+        background: var(--ps-dark); color: white;
+        font-size: 0.6rem; font-weight: 700; padding: 4px 10px;
+        border-radius: 6px; white-space: nowrap;
+        pointer-events: none; transition: var(--ps-transition-bounce);
+    }
+    .ps-copy-tooltip::after {
+        content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+        border: 4px solid transparent; border-top-color: var(--ps-dark);
+    }
+    .ps-copy-btn.copied .ps-copy-tooltip { transform: translateX(-50%) scale(1); }
+
+    .ps-modal-info {
+        display: flex; gap: 12px; padding: 16px;
+        background: rgba(13,148,136,0.04);
+        border: 1px solid rgba(13,148,136,0.08);
+        border-radius: var(--ps-radius-md);
+        margin-bottom: 8px;
+    }
+    .ps-modal-info i { color: var(--ps-teal); margin-top: 2px; flex-shrink: 0; }
+    .ps-modal-info span { font-size: 0.82rem; color: var(--ps-dark); font-weight: 600; line-height: 1.6; }
+
+    .ps-modal-place-btn {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 52px;
+        border: none; border-radius: var(--ps-radius-md);
+        background: var(--ps-dark); color: white;
+        font-size: 0.85rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-modal-place-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-modal-place-btn span, .ps-modal-place-btn i { position: relative; z-index: 1; }
+    .ps-modal-place-btn:hover::before { opacity: 1; }
+    .ps-modal-place-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(13,148,136,0.3);
+        color: white;
+    }
+
+    /* ═══════════════ REVEAL ═══════════════ */
+    .ps-reveal {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-reveal.ps-visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .ps-summary-card { position: static; margin-top: 8px; }
+        .ps-form-body { padding: 28px; }
+    }
+
+    @media (max-width: 767px) {
+        .ps-form-body { padding: 24px 20px; }
+        .ps-step-badge { width: 36px; height: 36px; font-size: 0.78rem; border-radius: 10px; }
+        .ps-step-title { font-size: 1.05rem; }
+        .ps-step-divider { margin-left: 52px; }
+        .ps-pay-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ps-pay-card { padding: 20px 14px; }
+        .ps-pay-icon { width: 46px; height: 46px; font-size: 1.2rem; border-radius: 12px; }
+        .ps-pay-label { font-size: 0.8rem; }
+        .ps-summary-body { padding: 20px; }
+        .ps-summary-head { padding: 20px 20px 0; }
+        .ps-total-value { font-size: 1.35rem; }
+        .ps-btn-place { height: 52px; font-size: 0.85rem; }
+        .ps-modal-body { padding: 20px; }
+        .ps-modal-header { padding: 20px 20px 0; }
+        .ps-modal-footer { padding: 0 20px 20px; }
+        .ps-pay-amount-value { font-size: 1.5rem; }
+    }
+
+    @media (max-width: 400px) {
+        .ps-pay-grid { grid-template-columns: 1fr; }
+        .ps-promo-input-wrap { flex-direction: column; }
+        .ps-promo-btn { justify-content: center; }
+    }
+</style>
+
+<div class="container py-4 py-lg-5">
+    <div class="row g-4 g-lg-5">
+        <!-- ══════ FORM COLUMN ══════ -->
+        <div class="col-lg-7">
+            <div class="ps-form-card ps-reveal">
+                <div class="ps-form-body">
+                    <form action="/checkout" method="POST" id="checkoutForm">
+                        <input type="hidden" name="applied_promo" id="hiddenPromoCode" value="{{ session.get('applied_promo', {}).get('code', '') }}">
+                        <input type="hidden" name="discount_amount" id="hiddenDiscountAmount" value="0">
+                        <input type="hidden" name="delivery_charge" id="hiddenDeliveryCharge" value="{{ delivery_charge|default(0) }}">
+                        <input type="hidden" name="final_total" id="hiddenFinalTotal" value="{{ (total + delivery_charge|default(0))|round(2) }}">
+
+                        <!-- Step 1 -->
+                        <div class="ps-step-header">
+                            <div class="ps-step-badge">1</div>
+                            <div>
+                                <h5 class="ps-step-title">Shipping Destination</h5>
+                                <p class="ps-step-sub">Where should we deliver?</p>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="ps-field-label">Receiver Name</label>
+                                <input type="text" name="name" class="ps-input" placeholder="Full Name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="ps-field-label">Contact Number</label>
+                                <input type="tel" name="phone" class="ps-input" placeholder="01XXXXXXXXX" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="ps-field-label">Detailed Address</label>
+                                <textarea name="address" class="ps-input" rows="3" placeholder="House no, Road, Area, District..." required></textarea>
+                            </div>
+                        </div>
+
+                        <hr class="ps-step-divider">
+
+                        <!-- Step 2 -->
+                        <div class="ps-step-header">
+                            <div class="ps-step-badge">2</div>
+                            <div>
+                                <h5 class="ps-step-title">Payment Method</h5>
+                                <p class="ps-step-sub">Choose how you want to pay</p>
+                            </div>
+                        </div>
+
+                        <div class="ps-pay-grid">
+                            <div class="ps-pay-option">
+                                <input type="radio" class="btn-check" name="payment_method" id="pay_cod" value="cod" checked onclick="togglePaymentFields(false)">
+                                <label class="ps-pay-card" for="pay_cod">
+                                    <div class="ps-pay-check"><i class="fa-solid fa-check"></i></div>
+                                    <div class="ps-pay-icon ps-pay-icon-cod">
+                                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                                    </div>
+                                    <span class="ps-pay-label">Cash on Delivery</span>
+                                    <span class="ps-pay-desc">Pay when you receive</span>
+                                </label>
+                            </div>
+                            <div class="ps-pay-option">
+                                <input type="radio" class="btn-check" name="payment_method" id="pay_now" value="digital" onclick="togglePaymentFields(true)">
+                                <label class="ps-pay-card" for="pay_now" data-bs-toggle="modal" data-bs-target="#paymentInstructionModal">
+                                    <div class="ps-pay-check"><i class="fa-solid fa-check"></i></div>
+                                    <div class="ps-pay-icon ps-pay-icon-digital">
+                                        <i class="fa-solid fa-shield-halved"></i>
+                                    </div>
+                                    <span class="ps-pay-label">Digital Payment</span>
+                                    <span class="ps-pay-desc">bKash / Nagad</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Trx Section -->
+                        <div id="trx_section" class="ps-trx-section">
+                            <div class="ps-trx-box">
+                                <div class="ps-trx-header">
+                                    <div class="ps-trx-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                                    <h6 class="ps-trx-title">Verification Details</h6>
+                                </div>
+                                <label class="ps-field-label">Transaction ID (TrxID)</label>
+                                <input type="text" name="transaction_id" id="trx_input" class="ps-input" placeholder="e.g. 9K3L5M7N">
+                                <p class="ps-trx-hint">Paste the ID exactly as shown in your payment confirmation SMS</p>
+                            </div>
+                        </div>
+
+                        <!-- Mobile CTA -->
+                        <button type="submit" class="ps-btn-place w-100 d-lg-none">
+                            <span>Confirm Order • ৳<span class="finalTotalDisplay">{{ (total + delivery_charge|default(0))|round(2) }}</span></span>
+                            <span class="ps-place-icon"><i class="fa-solid fa-arrow-right"></i></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════ SUMMARY COLUMN ══════ -->
+        <div class="col-lg-5">
+            <!-- Promo -->
+            <div class="ps-promo-card ps-reveal" style="margin-bottom: 16px;">
+                <div class="ps-promo-header">
+                    <div class="ps-promo-icon"><i class="fa-solid fa-ticket"></i></div>
+                    <h6 class="ps-promo-title">Promo Code</h6>
+                </div>
+                <div class="ps-promo-input-wrap">
+                    <input type="text" id="promoInput" class="ps-promo-input" placeholder="ENTER CODE" value="{{ session.get('applied_promo', {}).get('code', '') }}">
+                    <button class="ps-promo-btn" type="button" id="promoBtn" onclick="applyPromo()">
+                        <span>Apply</span>
+                    </button>
+                </div>
+                <div id="promoMessage" class="ps-promo-msg"></div>
+            </div>
+
+            <!-- Summary -->
+            <div class="ps-summary-card ps-reveal">
+                <div class="ps-summary-head">
+                    <h6 class="ps-summary-title">Order Summary</h6>
+                </div>
+                <div class="ps-summary-body">
+                    <!-- Items -->
+                    <div class="ps-items-list">
+                        {% for item in items %}
+                        <div class="ps-sum-item">
+                            <div class="ps-sum-item-img" style="position: relative;">
+                                <img src="{{ item.image }}" alt="{{ item.title }}">
+                                <span class="ps-sum-item-qty">{{ item.quantity }}</span>
+                            </div>
+                            <div class="ps-sum-item-info">
+                                <p class="ps-sum-item-name" title="{{ item.title }}">{{ item.title }}</p>
+                                {% if item.variant %}
+                                <div class="ps-sum-item-variant">{{ item.variant }}</div>
+                                {% endif %}
+                                <div class="ps-sum-item-unit">৳{{ item.price }} each</div>
+                            </div>
+                            <span class="ps-sum-item-total">৳{{ item.total }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Breakdown -->
+                    <div class="ps-price-breakdown">
+                        <div class="ps-sum-row">
+                            <span class="ps-sum-label">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                                Subtotal
+                            </span>
+                            <span class="ps-sum-value">৳{{ total }}</span>
+                        </div>
+
+                        <div class="ps-sum-row" id="discountRow" style="display: none;">
+                            <span class="ps-sum-label">
+                                <i class="fa-solid fa-tag"></i>
+                                Promo (<span id="discountPercentDisplay">0</span>%)
+                            </span>
+                            <span class="ps-sum-value ps-sum-discount-value">-৳<span id="discountAmountDisplay">0</span></span>
+                        </div>
+
+                        <div class="ps-sum-row">
+                            <span class="ps-sum-label">
+                                <i class="fa-solid fa-truck"></i>
+                                Delivery
+                            </span>
+                            {% if delivery_charge and delivery_charge|int > 0 %}
+                                <span class="ps-sum-value">৳{{ delivery_charge }}</span>
+                            {% else %}
+                                <span class="ps-sum-free-badge">FREE</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="ps-total-row">
+                        <span class="ps-total-label">Total Due</span>
+                        <span class="ps-total-value">
+                            <span class="ps-total-currency">৳</span><span class="finalTotalDisplay">{{ (total + delivery_charge|default(0))|round(2) }}</span>
+                        </span>
+                    </div>
+
+                    <!-- Desktop CTA -->
+                    <button type="button" onclick="document.getElementById('checkoutForm').submit()" class="ps-btn-place w-100 d-none d-lg-block">
+                        <span>Place Your Order</span>
+                        <span class="ps-place-icon"><i class="fa-solid fa-arrow-right"></i></span>
+                    </button>
+
+                    <div class="ps-secure-note">
+                        <i class="fa-solid fa-lock"></i> Secure checkout by Ponno Sebaa
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ PAYMENT MODAL ═══════════════ -->
+<div class="modal fade" id="paymentInstructionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="ps-modal-content">
+            <div class="ps-modal-header">
+                <div class="d-flex align-items-center gap-3 w-100">
+                    <div class="ps-pay-icon ps-pay-icon-digital" style="width:42px;height:42px;font-size:1.1rem;flex-shrink:0;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h5 class="ps-modal-title flex-grow-1">Send Digital Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="ps-modal-body">
+                <div class="ps-pay-amount">
+                    <div class="ps-pay-amount-label">Amount to Send</div>
+                    <div class="ps-pay-amount-value">
+                        <span class="ps-total-currency">৳</span><span class="finalTotalDisplay">{{ (total + delivery_charge|default(0))|round(2) }}</span>
+                    </div>
+                </div>
+
+                <div class="ps-payment-method-card">
+                    <div class="ps-pm-icon">
+                        <img src="https://i.ibb.co/60Z86P4/bkash-logo.png" alt="bKash" onerror="this.src='https://placehold.co/48x48/f1f5f9/94a3b8?text=B'">
+                    </div>
+                    <div class="ps-pm-info">
+                        <div class="ps-pm-type">bKash Personal</div>
+                        <div class="ps-pm-number">01400461284</div>
+                    </div>
+                    <button class="ps-copy-btn" onclick="copyNum(this, '01400461284')">
+                        <i class="fa-regular fa-copy"></i>
+                        <span class="ps-copy-tooltip">Copied!</span>
+                    </button>
+                </div>
+
+                <div class="ps-payment-method-card">
+                    <div class="ps-pm-icon">
+                        <img src="https://i.ibb.co/N2zWjXF/nagad-logo.png" alt="Nagad" onerror="this.src='https://placehold.co/48x48/f1f5f9/94a3b8?text=N'">
+                    </div>
+                    <div class="ps-pm-info">
+                        <div class="ps-pm-type">Nagad Personal</div>
+                        <div class="ps-pm-number">01400461284</div>
+                    </div>
+                    <button class="ps-copy-btn" onclick="copyNum(this, '01400461284')">
+                        <i class="fa-regular fa-copy"></i>
+                        <span class="ps-copy-tooltip">Copied!</span>
+                    </button>
+                </div>
+
+                <div class="ps-modal-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>টাকা পাঠানোর পর প্রাপ্ত <strong>Transaction ID</strong> টি চেকআউট পেজের বক্সে পেস্ট করুন।</span>
+                </div>
+            </div>
+            <div class="ps-modal-footer">
+                <button type="button" class="ps-modal-place-btn" data-bs-dismiss="modal">
+                    <span>I Have Completed Payment</span>
+                    <i class="fa-solid fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const subtotal = parseFloat("{{ total|default(0) }}");
+    const deliveryCharge = parseFloat("{{ delivery_charge|default(0) }}");
+    const originalTotal = subtotal + deliveryCharge;
+
+    // Scroll reveal
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('ps-visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.ps-reveal').forEach(el => revealObs.observe(el));
+
+    // Copy number with tooltip
+    function copyNum(btn, num) {
+        navigator.clipboard.writeText(num).then(() => {
+            btn.classList.add('copied');
+            const icon = btn.querySelector('i');
+            icon.className = 'fa-solid fa-check';
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                icon.className = 'fa-regular fa-copy';
+            }, 2000);
+        });
+    }
+
+    // Payment toggle with smooth animation
+    function togglePaymentFields(isOnline) {
+        const section = document.getElementById('trx_section');
+        const input = document.getElementById('trx_input');
+        if (isOnline) {
+            section.classList.add('ps-open');
+            setTimeout(() => input.required = true, 300);
+        } else {
+            section.classList.remove('ps-open');
+            input.required = false;
+            setTimeout(() => input.value = '', 400);
+        }
+    }
+
+    // Promo code
+    function applyPromo() {
+        const codeInput = document.getElementById('promoInput');
+        const code = codeInput.value.trim().toUpperCase();
+        const msg = document.getElementById('promoMessage');
+        const btn = document.getElementById('promoBtn');
+
+        if (!code) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><span>Checking</span>';
+
+        fetch('/apply_promo', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `promo_code=${encodeURIComponent(code)}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<span>Apply</span>';
+
+            if (data.success) {
+                const discPerc = parseFloat(data.discount);
+                const discAmt = (subtotal * discPerc) / 100;
+                const finalTotal = originalTotal - discAmt;
+
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discountPercentDisplay').innerText = discPerc;
+                document.getElementById('discountAmountDisplay').innerText = discAmt.toFixed(2);
+
+                document.querySelectorAll('.finalTotalDisplay').forEach(el => {
+                    el.innerText = finalTotal.toFixed(2);
+                    el.style.transition = '0.3s ease';
+                    el.style.transform = 'scale(1.08)';
+                    setTimeout(() => el.style.transform = 'scale(1)', 300);
+                });
+
+                document.getElementById('hiddenPromoCode').value = code;
+                document.getElementById('hiddenDiscountAmount').value = discAmt.toFixed(2);
+                document.getElementById('hiddenFinalTotal').value = finalTotal.toFixed(2);
+
+                msg.className = 'ps-promo-msg ps-promo-msg-success';
+                msg.innerHTML = '<i class="fa-solid fa-circle-check"></i> PROMO APPLIED — ' + discPerc + '% OFF';
+            } else {
+                msg.className = 'ps-promo-msg ps-promo-msg-error';
+                msg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> THIS CODE IS INVALID';
+                resetPromoUI();
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<span>Apply</span>';
+            msg.className = 'ps-promo-msg ps-promo-msg-error';
+            msg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> SOMETHING WENT WRONG';
+        });
+    }
+
+    function resetPromoUI() {
+        document.getElementById('discountRow').style.display = 'none';
+        document.querySelectorAll('.finalTotalDisplay').forEach(el => el.innerText = originalTotal.toFixed(2));
+        document.getElementById('hiddenPromoCode').value = "";
+        document.getElementById('hiddenDiscountAmount').value = "0";
+        document.getElementById('hiddenFinalTotal').value = originalTotal.toFixed(2);
+    }
+
+    // Enter key on promo input
+    document.getElementById('promoInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); applyPromo(); }
+    });
+</script>
+{% endblock %}

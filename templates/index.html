@@ -1,0 +1,741 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if banners %}
+<section class="container mt-4">
+    <div id="heroSlider" class="carousel slide carousel-fade ps-hero-carousel" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for banner in banners %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}" data-bs-interval="5000">
+                <a href="{{ banner.link if banner.link else '#' }}" class="ps-banner-link">
+                    <div class="ps-banner-slide" style="background-image: url('{{ banner.image_url }}');">
+                        <div class="ps-banner-overlay"></div>
+                        <div class="ps-banner-shine"></div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="ps-hero-indicators">
+            {% for banner in banners %}
+            <button type="button" data-bs-target="#heroSlider" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></button>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroSlider" data-bs-slide="prev">
+            <div class="ps-nav-btn"><i class="fa-solid fa-chevron-left"></i></div>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroSlider" data-bs-slide="next">
+            <div class="ps-nav-btn"><i class="fa-solid fa-chevron-right"></i></div>
+        </button>
+    </div>
+</section>
+{% endif %}
+
+<div class="container my-5 ps-section-reveal">
+    <div class="ps-categories-bar">
+        <div class="ps-cat-glow-left"></div>
+        <div class="ps-cat-glow-right"></div>
+        {% set categories = [
+            ('accessories', 'fa-gem', 'Accessories'),
+            ('fashion', 'fa-shirt', 'Fashion'),
+            ('electronics', 'fa-laptop', 'Gadgets'),
+            ('home', 'fa-house-chimney-window', 'Home Decor')
+        ] %}
+        {% for cat_id, icon, name in categories %}
+        <div class="ps-cat-item">
+            <a href="/category/{{ cat_id }}" class="text-decoration-none d-flex flex-column align-items-center">
+                <div class="ps-cat-ring">
+                    <div class="ps-cat-icon-box">
+                        <i class="fa-solid {{ icon }}"></i>
+                    </div>
+                    <svg class="ps-cat-ring-svg" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="46" />
+                    </svg>
+                </div>
+                <span class="ps-cat-name">{{ name }}</span>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container pb-5" id="products">
+    <div class="ps-section-header ps-section-reveal">
+        <div class="ps-header-left">
+            <span class="ps-header-tag">CURATED PICKS</span>
+            <h2 class="ps-header-title">
+                Trending <span class="ps-gradient-text">Right Now</span>
+            </h2>
+            <div class="ps-header-line">
+                <div class="ps-line-dot"></div>
+                <div class="ps-line-bar"></div>
+            </div>
+        </div>
+        <a href="/all-products" class="ps-view-all-btn">
+            <span>Explore All</span>
+            <div class="ps-arrow-circle">
+                <i class="fa-solid fa-arrow-right"></i>
+            </div>
+        </a>
+    </div>
+
+    <div class="row g-3 g-xl-4">
+        {% for p in products %}
+        <div class="col-6 col-lg-3 ps-product-col ps-stagger" style="--stagger: {{ loop.index0 }};">
+            <div class="ps-product-card">
+                <div class="ps-card-visual">
+                    <div class="ps-img-container">
+                        <a href="/product/{{ p._id }}">
+                            <img src="{{ p.main_image if p.main_image else 'https://via.placeholder.com/300' }}" 
+                                 class="ps-product-img" alt="{{ p.title }}" loading="lazy">
+                        </a>
+                        <div class="ps-img-overlay">
+                            <a href="/product/{{ p._id }}" class="ps-quick-view-btn">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="ps-card-badges">
+                        {% if p.del_price and p.del_price|int > p.price|int %}
+                            <span class="ps-badge-discount">
+                                <span class="ps-badge-pulse"></span>
+                                -{{ ((p.del_price|int - p.price|int) / p.del_price|int * 100)|int }}%
+                            </span>
+                        {% endif %}
+                        {% if not p.in_stock %}
+                            <span class="ps-badge-soldout">
+                                <i class="fa-solid fa-ban me-1"></i>Sold Out
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="ps-wishlist-btn" onclick="this.classList.toggle('active')">
+                        <i class="fa-regular fa-heart"></i>
+                    </div>
+                </div>
+
+                <div class="ps-card-body">
+                    <a href="/product/{{ p._id }}" class="text-decoration-none">
+                        <h6 class="ps-product-name">{{ p.title }}</h6>
+                    </a>
+                    
+                    <div class="ps-price-row">
+                        <span class="ps-current-price">
+                            <span class="ps-currency">৳</span>{{ p.price }}
+                        </span>
+                        {% if p.del_price %}
+                        <span class="ps-was-price">৳{{ p.del_price }}</span>
+                        {% endif %}
+                        {% if p.del_price and p.del_price|int > p.price|int %}
+                        <span class="ps-save-tag">Save ৳{{ p.del_price|int - p.price|int }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="ps-action-row">
+                        {% if p.in_stock %}
+                        <button onclick="addToCart('{{ p._id }}')" class="ps-cart-btn" title="Add to Cart">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </button>
+                        <a href="/add_to_cart/{{ p._id }}?next=checkout" class="ps-buy-btn">
+                            <span class="ps-buy-text">Buy Now</span>
+                            <span class="ps-buy-icon"><i class="fa-solid fa-bolt"></i></span>
+                        </a>
+                        {% else %}
+                        <button class="ps-unavailable-btn" disabled>
+                            <i class="fa-solid fa-clock me-1"></i> Unavailable
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if products and products|length > 4 %}
+    <div class="text-center mt-5 ps-section-reveal">
+        <a href="/all-products" class="ps-load-more-btn">
+            <span>View Full Collection</span>
+            <div class="ps-load-dots">
+                <span></span><span></span><span></span>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap');
+
+    :root {
+        --ps-teal: #0d9488;
+        --ps-teal-deep: #0f766e;
+        --ps-teal-dark: #134e4a;
+        --ps-emerald: #059669;
+        --ps-gold: #f59e0b;
+        --ps-gold-light: #fbbf24;
+        --ps-dark: #0c1220;
+        --ps-dark-card: #111827;
+        --ps-surface: #f8fafc;
+        --ps-surface-warm: #fefce8;
+        --ps-border: rgba(15, 23, 42, 0.06);
+        --ps-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+        --ps-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+        --ps-shadow-lg: 0 20px 50px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+        --ps-shadow-xl: 0 25px 60px rgba(13,148,136,0.12), 0 10px 25px rgba(0,0,0,0.06);
+        --ps-radius-sm: 10px;
+        --ps-radius-md: 16px;
+        --ps-radius-lg: 22px;
+        --ps-radius-xl: 28px;
+        --ps-transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-fast: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+    /* ═══════════════ HERO CAROUSEL ═══════════════ */
+    .ps-hero-carousel {
+        border-radius: var(--ps-radius-xl);
+        overflow: hidden;
+        position: relative;
+        box-shadow: var(--ps-shadow-xl);
+    }
+    .ps-banner-link { display: block; }
+    .ps-banner-slide {
+        height: 420px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        transition: transform 8s ease-out;
+    }
+    .carousel-item.active .ps-banner-slide { transform: scale(1.06); }
+    .ps-banner-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(12,18,32,0.35) 0%, rgba(13,148,136,0.15) 50%, transparent 100%);
+    }
+    .ps-banner-shine {
+        position: absolute; inset: 0;
+        background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 55%, transparent 60%);
+        background-size: 200% 100%;
+        animation: psShine 4s ease-in-out infinite;
+    }
+    @keyframes psShine {
+        0%, 100% { background-position: 200% 0; }
+        50% { background-position: -100% 0; }
+    }
+
+    .ps-hero-indicators {
+        position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+        display: flex; gap: 8px; z-index: 10;
+    }
+    .ps-hero-indicators button {
+        width: 8px; height: 8px; border-radius: 10px;
+        background: rgba(255,255,255,0.4); border: none;
+        transition: var(--ps-transition); cursor: pointer; padding: 0;
+    }
+    .ps-hero-indicators button.active {
+        width: 32px; background: white;
+        box-shadow: 0 0 12px rgba(255,255,255,0.4);
+    }
+
+    .ps-nav-btn {
+        width: 46px; height: 46px; border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.2);
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 0.85rem;
+        transition: var(--ps-transition);
+        opacity: 0; transform: scale(0.8);
+    }
+    .ps-hero-carousel:hover .ps-nav-btn { opacity: 1; transform: scale(1); }
+    .ps-nav-btn:hover {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.1) !important;
+    }
+    .carousel-control-prev, .carousel-control-next {
+        width: auto !important; padding: 0 16px !important;
+        opacity: 1 !important; top: 50% !important; transform: translateY(-50%);
+    }
+    .carousel-control-prev-icon, .carousel-control-next-icon { display: none !important; }
+
+    /* ═══════════════ CATEGORIES ═══════════════ */
+    .ps-categories-bar {
+        display: flex; justify-content: center; gap: 40px;
+        padding: 32px 20px; position: relative;
+        background: white; border-radius: var(--ps-radius-xl);
+        box-shadow: var(--ps-shadow-md);
+        border: 1px solid var(--ps-border);
+    }
+    .ps-cat-glow-left, .ps-cat-glow-right {
+        position: absolute; top: 50%; width: 120px; height: 120px;
+        border-radius: 50%; filter: blur(60px); opacity: 0.12;
+        transform: translateY(-50%); pointer-events: none;
+    }
+    .ps-cat-glow-left { left: -30px; background: var(--ps-teal); }
+    .ps-cat-glow-right { right: -30px; background: var(--ps-gold); }
+
+    .ps-cat-item { position: relative; z-index: 1; }
+    .ps-cat-ring {
+        position: relative; width: 80px; height: 80px;
+    }
+    .ps-cat-ring-svg {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        transform: rotate(-90deg);
+    }
+    .ps-cat-ring-svg circle {
+        fill: none; stroke: var(--ps-border); stroke-width: 2;
+        stroke-dasharray: 289; stroke-dashoffset: 0;
+        transition: stroke-dashoffset 0.6s ease, stroke 0.3s ease;
+        stroke-linecap: round;
+    }
+    .ps-cat-item:hover .ps-cat-ring-svg circle {
+        stroke-dashoffset: 72;
+        stroke: var(--ps-teal);
+    }
+    .ps-cat-icon-box {
+        position: absolute; inset: 8px;
+        background: var(--ps-surface);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; color: var(--ps-teal-dark);
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-cat-item:hover .ps-cat-icon-box {
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        color: white; transform: scale(0.88);
+        box-shadow: 0 8px 24px rgba(13,148,136,0.35);
+    }
+    .ps-cat-name {
+        display: block; margin-top: 14px; text-align: center;
+        font-size: 0.78rem; font-weight: 700; color: var(--ps-dark);
+        letter-spacing: 0.03em; text-transform: uppercase;
+        transition: var(--ps-transition-fast);
+    }
+    .ps-cat-item:hover .ps-cat-name { color: var(--ps-teal); }
+
+    /* ═══════════════ SECTION HEADER ═══════════════ */
+    .ps-section-header {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        margin-bottom: 36px; padding: 0 4px;
+    }
+    .ps-header-tag {
+        display: inline-block; font-size: 0.65rem; font-weight: 800;
+        letter-spacing: 0.15em; text-transform: uppercase;
+        color: var(--ps-gold); margin-bottom: 6px;
+        padding: 4px 12px; background: var(--ps-surface-warm);
+        border-radius: 50px; border: 1px solid rgba(245,158,11,0.15);
+    }
+    .ps-header-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem; font-weight: 700; color: var(--ps-dark);
+        margin: 0; line-height: 1.2;
+    }
+    .ps-gradient-text {
+        background: linear-gradient(135deg, var(--ps-teal) 0%, var(--ps-emerald) 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .ps-header-line {
+        display: flex; align-items: center; gap: 8px; margin-top: 10px;
+    }
+    .ps-line-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--ps-gold);
+        box-shadow: 0 0 12px rgba(245,158,11,0.4);
+        animation: psPulse 2s ease-in-out infinite;
+    }
+    @keyframes psPulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.3); opacity: 0.7; }
+    }
+    .ps-line-bar {
+        width: 50px; height: 3px; border-radius: 10px;
+        background: linear-gradient(90deg, var(--ps-gold), transparent);
+    }
+
+    .ps-view-all-btn {
+        display: flex; align-items: center; gap: 10px;
+        text-decoration: none; color: var(--ps-dark);
+        font-weight: 600; font-size: 0.88rem;
+        padding: 10px 20px 10px 16px;
+        border-radius: 50px;
+        border: 1px solid var(--ps-border);
+        background: white;
+        transition: var(--ps-transition);
+        white-space: nowrap;
+    }
+    .ps-view-all-btn:hover {
+        border-color: var(--ps-teal);
+        box-shadow: var(--ps-shadow-md);
+        transform: translateX(-4px);
+    }
+    .ps-arrow-circle {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 0.75rem;
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-view-all-btn:hover .ps-arrow-circle {
+        transform: translateX(4px) scale(1.1);
+        box-shadow: 0 4px 16px rgba(13,148,136,0.35);
+    }
+
+    /* ═══════════════ PRODUCT CARDS ═══════════════ */
+    .ps-product-col { margin-bottom: 8px; }
+
+    .ps-product-card {
+        background: white; border-radius: var(--ps-radius-lg);
+        border: 1px solid var(--ps-border);
+        overflow: hidden; position: relative;
+        transition: var(--ps-transition);
+        box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-product-card::before {
+        content: ''; position: absolute; inset: -1px;
+        border-radius: var(--ps-radius-lg);
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald), var(--ps-gold));
+        z-index: -1; opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .ps-product-card:hover::before { opacity: 1; }
+    .ps-product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--ps-shadow-xl);
+        border-color: transparent;
+    }
+
+    .ps-card-visual { position: relative; padding: 10px 10px 0; }
+
+    .ps-img-container {
+        aspect-ratio: 1/1; border-radius: var(--ps-radius-md);
+        overflow: hidden; position: relative;
+        background: var(--ps-surface);
+    }
+    .ps-product-img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-product-card:hover .ps-product-img { transform: scale(1.08); }
+
+    .ps-img-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, transparent 50%, rgba(12,18,32,0.4) 100%);
+        opacity: 0; transition: var(--ps-transition);
+        display: flex; align-items: flex-end; justify-content: center;
+        padding-bottom: 16px;
+    }
+    .ps-product-card:hover .ps-img-overlay { opacity: 1; }
+
+    .ps-quick-view-btn {
+        width: 44px; height: 44px; border-radius: 50%;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--ps-dark); font-size: 0.9rem;
+        transform: translateY(16px); opacity: 0;
+        transition: var(--ps-transition-bounce);
+        box-shadow: var(--ps-shadow-md);
+        text-decoration: none;
+    }
+    .ps-product-card:hover .ps-quick-view-btn {
+        transform: translateY(0); opacity: 1;
+    }
+    .ps-quick-view-btn:hover {
+        background: var(--ps-teal); color: white;
+        transform: translateY(0) scale(1.15) !important;
+    }
+
+    /* Badges */
+    .ps-card-badges {
+        position: absolute; top: 16px; left: 16px;
+        display: flex; flex-direction: column; gap: 6px; z-index: 3;
+    }
+    .ps-badge-discount {
+        display: inline-flex; align-items: center; gap: 4px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white; font-size: 0.68rem; font-weight: 800;
+        padding: 5px 10px; border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(239,68,68,0.35);
+        letter-spacing: 0.02em;
+    }
+    .ps-badge-pulse {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: white; animation: psBadgePulse 1.5s ease-in-out infinite;
+    }
+    @keyframes psBadgePulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
+    .ps-badge-soldout {
+        display: inline-flex; align-items: center;
+        background: rgba(12,18,32,0.8);
+        backdrop-filter: blur(10px);
+        color: white; font-size: 0.65rem; font-weight: 700;
+        padding: 5px 10px; border-radius: 8px;
+        letter-spacing: 0.03em;
+    }
+
+    /* Wishlist */
+    .ps-wishlist-btn {
+        position: absolute; top: 16px; right: 16px; z-index: 3;
+        width: 36px; height: 36px; border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0,0,0,0.04);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: var(--ps-transition);
+        color: #94a3b8; font-size: 0.85rem;
+    }
+    .ps-wishlist-btn:hover { color: #ef4444; transform: scale(1.15); }
+    .ps-wishlist-btn.active {
+        color: #ef4444; background: #fef2f2;
+        border-color: rgba(239,68,68,0.15);
+    }
+    .ps-wishlist-btn.active i { font-weight: 900; }
+
+    /* Card Body */
+    .ps-card-body {
+        padding: 14px 14px 16px; display: flex; flex-direction: column;
+    }
+    .ps-product-name {
+        font-size: 0.82rem; font-weight: 600; color: var(--ps-dark);
+        margin: 0 0 8px; line-height: 1.45;
+        height: 2.4rem; overflow: hidden;
+        display: -webkit-box; -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        transition: var(--ps-transition-fast);
+    }
+    .ps-product-name:hover { color: var(--ps-teal); }
+
+    .ps-price-row {
+        display: flex; align-items: center; gap: 8px;
+        margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .ps-current-price {
+        font-size: 1.15rem; font-weight: 800; color: var(--ps-teal-dark);
+        letter-spacing: -0.02em;
+    }
+    .ps-currency { font-size: 0.85rem; font-weight: 600; }
+    .ps-was-price {
+        font-size: 0.75rem; color: #94a3b8; font-weight: 500;
+        text-decoration: line-through;
+    }
+    .ps-save-tag {
+        font-size: 0.6rem; font-weight: 800; color: var(--ps-gold);
+        background: var(--ps-surface-warm);
+        padding: 2px 7px; border-radius: 50px;
+        letter-spacing: 0.02em;
+    }
+
+    /* Actions */
+    .ps-action-row {
+        display: flex; gap: 8px; margin-top: auto;
+    }
+    .ps-cart-btn {
+        flex-shrink: 0; width: 44px; height: 44px;
+        border-radius: var(--ps-radius-sm);
+        border: 2px solid var(--ps-border);
+        background: white; color: var(--ps-teal-dark);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.9rem; cursor: pointer;
+        transition: var(--ps-transition);
+    }
+    .ps-cart-btn:hover {
+        border-color: var(--ps-teal);
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        color: white;
+        box-shadow: 0 4px 16px rgba(13,148,136,0.3);
+        transform: scale(1.05);
+    }
+    .ps-buy-btn {
+        flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+        height: 44px; border-radius: var(--ps-radius-sm);
+        background: var(--ps-dark); color: white;
+        text-decoration: none; font-size: 0.78rem; font-weight: 700;
+        letter-spacing: 0.03em; text-transform: uppercase;
+        transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-buy-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-buy-btn:hover::before { opacity: 1; }
+    .ps-buy-btn span, .ps-buy-btn i { position: relative; z-index: 1; }
+    .ps-buy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(13,148,136,0.3);
+        color: white;
+    }
+    .ps-buy-icon {
+        width: 22px; height: 22px; border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.65rem;
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-buy-btn:hover .ps-buy-icon { transform: rotate(-15deg) scale(1.2); }
+
+    .ps-unavailable-btn {
+        flex: 1; height: 44px; border-radius: var(--ps-radius-sm);
+        background: var(--ps-surface); color: #94a3b8;
+        border: 1px dashed #cbd5e1; font-size: 0.78rem; font-weight: 600;
+        cursor: not-allowed;
+    }
+
+    /* ═══════════════ LOAD MORE ═══════════════ */
+    .ps-load-more-btn {
+        display: inline-flex; align-items: center; gap: 12px;
+        text-decoration: none; color: var(--ps-dark);
+        font-weight: 700; font-size: 0.9rem;
+        padding: 16px 36px; border-radius: 60px;
+        border: 2px solid var(--ps-border);
+        background: white; transition: var(--ps-transition);
+    }
+    .ps-load-more-btn:hover {
+        border-color: var(--ps-teal);
+        box-shadow: var(--ps-shadow-lg);
+        transform: translateY(-3px);
+        color: var(--ps-dark);
+    }
+    .ps-load-dots {
+        display: flex; gap: 4px;
+    }
+    .ps-load-dots span {
+        width: 5px; height: 5px; border-radius: 50%;
+        background: var(--ps-teal);
+        animation: psDotBounce 1.4s ease-in-out infinite;
+    }
+    .ps-load-dots span:nth-child(2) { animation-delay: 0.16s; }
+    .ps-load-dots span:nth-child(3) { animation-delay: 0.32s; }
+    @keyframes psDotBounce {
+        0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+        40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ═══════════════ REVEAL ANIMATIONS ═══════════════ */
+    .ps-section-reveal {
+        opacity: 0; transform: translateY(30px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-section-reveal.ps-visible {
+        opacity: 1; transform: translateY(0);
+    }
+    .ps-stagger {
+        opacity: 0; transform: translateY(24px);
+        transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        transition-delay: calc(var(--stagger) * 0.08s);
+    }
+    .ps-stagger.ps-visible {
+        opacity: 1; transform: translateY(0);
+    }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .ps-header-title { font-size: 1.6rem; }
+        .ps-categories-bar { gap: 24px; padding: 24px 16px; }
+    }
+
+    @media (max-width: 767px) {
+        .ps-banner-slide { height: 200px; }
+        .ps-hero-carousel { border-radius: var(--ps-radius-lg); }
+        .ps-categories-bar {
+            gap: 0; justify-content: space-around;
+            border-radius: var(--ps-radius-lg);
+            padding: 20px 12px;
+        }
+        .ps-cat-ring { width: 62px; height: 62px; }
+        .ps-cat-icon-box { inset: 6px; font-size: 1.1rem; }
+        .ps-cat-name { font-size: 0.65rem; margin-top: 10px; }
+        .ps-header-title { font-size: 1.35rem; }
+        .ps-header-tag { font-size: 0.58rem; }
+        .ps-section-header { margin-bottom: 24px; }
+        .ps-view-all-btn span { display: none; }
+        .ps-view-all-btn { padding: 10px; border-radius: 50%; }
+        .ps-product-card { border-radius: var(--ps-radius-md); }
+        .ps-img-container { border-radius: var(--ps-radius-sm); }
+        .ps-current-price { font-size: 1rem; }
+        .ps-buy-btn { font-size: 0.7rem; }
+        .ps-buy-icon { display: none; }
+        .ps-hero-indicators button { width: 6px; height: 6px; }
+        .ps-hero-indicators button.active { width: 24px; }
+        .ps-nav-btn { width: 36px; height: 36px; font-size: 0.75rem; }
+    }
+
+    @media (max-width: 400px) {
+        .ps-action-row { gap: 6px; }
+        .ps-cart-btn { width: 40px; height: 40px; font-size: 0.8rem; }
+        .ps-buy-btn { height: 40px; font-size: 0.65rem; }
+        .ps-card-body { padding: 10px 10px 12px; }
+    }
+</style>
+
+<script>
+    // Scroll reveal observer
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('ps-visible');
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.ps-section-reveal, .ps-stagger').forEach(el => {
+        revealObserver.observe(el);
+    });
+
+    // Wishlist toggle with animation
+    document.querySelectorAll('.ps-wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.toggle('active');
+            const icon = this.querySelector('i');
+            if (this.classList.contains('active')) {
+                icon.style.transform = 'scale(1.4)';
+                setTimeout(() => icon.style.transform = 'scale(1)', 200);
+            }
+        });
+    });
+
+    // Cart button feedback
+    function addToCart(productId) {
+        const btn = event.currentTarget;
+        btn.style.transform = 'scale(0.85)';
+        setTimeout(() => btn.style.transform = 'scale(1.15)', 100);
+        setTimeout(() => btn.style.transform = 'scale(1)', 250);
+        
+        // Create floating indicator
+        const indicator = document.createElement('div');
+        indicator.innerHTML = '<i class="fa-solid fa-check"></i>';
+        Object.assign(indicator.style, {
+            position: 'absolute', top: '50%', left: '50%',
+            transform: 'translate(-50%, -50%) scale(0)',
+            width: '100%', height: '100%', borderRadius: 'inherit',
+            background: 'linear-gradient(135deg, #0d9488, #059669)',
+            color: 'white', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', fontSize: '1rem', zIndex: '10',
+            transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+        });
+        btn.style.position = 'relative';
+        btn.style.overflow = 'hidden';
+        btn.appendChild(indicator);
+        requestAnimationFrame(() => indicator.style.transform = 'translate(-50%, -50%) scale(1)');
+        setTimeout(() => {
+            indicator.style.transform = 'translate(-50%, -50%) scale(0)';
+            setTimeout(() => indicator.remove(), 300);
+        }, 800);
+
+        // Actual redirect after animation
+        setTimeout(() => {
+            window.location.href = '/add_to_cart/' + productId;
+        }, 600);
+    }
+</script>
+
+{% endblock %}

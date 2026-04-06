@@ -1,0 +1,203 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+    :root {
+        --brand-teal: #1c6b6b;
+        --brand-gold: #d4a044;
+        --brand-dark: #0d2b2b;
+    }
+
+    .text-teal { color: var(--brand-teal); }
+    .bg-brand-teal { background-color: var(--brand-teal) !important; }
+    .btn-brand-teal { 
+        background: var(--brand-teal); 
+        color: white; 
+        transition: 0.3s;
+        border: none;
+    }
+    .btn-brand-teal:hover { 
+        background: var(--brand-dark); 
+        color: white; 
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(28, 107, 107, 0.2);
+    }
+
+    /* Select2 Custom Branding */
+    .select2-container--default .select2-selection--multiple {
+        background-color: #f1f5f5 !important;
+        border: 2px solid transparent !important;
+        border-radius: 12px !important;
+        padding: 8px !important;
+        transition: 0.3s;
+    }
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: var(--brand-teal) !important;
+        background-color: #fff !important;
+    }
+    .select2-selection__choice {
+        background-color: var(--brand-teal) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 3px 10px !important;
+        font-weight: 500 !important;
+    }
+    .select2-selection__choice__remove {
+        color: white !important;
+        margin-right: 8px !important;
+        border: none !important;
+    }
+    .select2-selection__choice__remove:hover {
+        background-color: rgba(255,255,255,0.2) !important;
+        color: #fff !important;
+    }
+
+    .promo-card-badge {
+        background: rgba(28, 107, 107, 0.1);
+        color: var(--brand-teal);
+        font-family: 'Monaco', 'Consolas', monospace;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white sticky-top" style="top: 20px;">
+                <h5 class="fw-bold text-navy mb-4">
+                    <i class="fa-solid fa-tags me-2 text-teal"></i>Forge New Coupon
+                </h5>
+                
+                <form action="/admin/add_promo" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Coupon Code</label>
+                        <input type="text" name="code" class="form-control bg-light border-0 py-2 fw-bold text-uppercase" 
+                               style="color: var(--brand-teal);" placeholder="e.g. SEBAA20" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Discount Value (%)</label>
+                        <div class="input-group">
+                            <input type="number" name="discount" class="form-control bg-light border-0 py-2" placeholder="15" max="100" required>
+                            <span class="input-group-text bg-light border-0 text-muted fw-bold">%</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Target Products</label>
+                        <select name="products" id="productSelect" class="form-control" multiple="multiple" required>
+                            <option value="all" selected>✨ Apply to All Products</option>
+                            {% for p in products %}
+                            <option value="{{ p._id }}">{{ p.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text x-small mt-2 text-muted">
+                            Search and select specific items or use "Select All" for a store-wide promotion.
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-brand-teal w-100 py-3 rounded-pill fw-bold">
+                        <i class="fa-solid fa-plus-circle me-2"></i>Activate Coupon
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-navy mb-0">Live Promotions</h5>
+                    <span class="badge rounded-pill bg-light text-teal border px-3 py-2">{{ coupons|length }} Active</span>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="text-muted x-small text-uppercase" style="letter-spacing: 1px;">
+                            <tr>
+                                <th class="border-0">Promo Code</th>
+                                <th class="border-0">Value</th>
+                                <th class="border-0">Scope</th>
+                                <th class="border-0 text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in coupons %}
+                            <tr>
+                                <td class="border-light">
+                                    <span class="badge promo-card-badge px-3 py-2 fs-6 border border-teal border-opacity-10">
+                                        {{ c.code }}
+                                    </span>
+                                </td>
+                                <td class="border-light">
+                                    <div class="fw-bold text-success" style="font-size: 1.1rem;">
+                                        {{ c.discount_percent }}% <small>OFF</small>
+                                    </div>
+                                </td>
+                                <td class="border-light">
+                                    {% if 'all' in c.applicable_products %}
+                                        <span class="badge rounded-pill bg-soft-teal text-teal border border-teal border-opacity-10 px-3">
+                                            <i class="fa-solid fa-globe me-1"></i> Store-wide
+                                        </span>
+                                    {% else %}
+                                        <span class="badge rounded-pill bg-light text-muted border px-3">
+                                            <i class="fa-solid fa-box-open me-1"></i> {{ c.applicable_products|length }} Specific Items
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="border-light text-end">
+                                    <form action="/admin/delete_promo/{{ c._id }}" method="POST" onsubmit="return confirm('Archive this promotion?')">
+                                        <button class="btn btn-sm btn-outline-danger border-0 rounded-circle p-2 shadow-none">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not coupons %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="fa-solid fa-ticket-simple d-block mb-2 fs-2 opacity-25"></i>
+                                    No active promo codes currently available.
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#productSelect').select2({
+        placeholder: "🔍 Type product name...",
+        allowClear: true,
+        closeOnSelect: false,
+        width: '100%'
+    });
+
+    // Intelligent Selection Logic
+    $('#productSelect').on('select2:select', function (e) {
+        if(e.params.data.id === 'all') {
+            $(this).val(['all']).trigger('change');
+        } else {
+            let currentValues = $(this).val();
+            let index = currentValues.indexOf('all');
+            if (index > -1) {
+                currentValues.splice(index, 1);
+                $(this).val(currentValues).trigger('change');
+            }
+        }
+    });
+});
+</script>
+
+{% endblock %}

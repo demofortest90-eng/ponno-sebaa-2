@@ -1,0 +1,517 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap');
+
+    :root {
+        --ps-teal: #0d9488;
+        --ps-teal-deep: #0f766e;
+        --ps-teal-dark: #134e4a;
+        --ps-emerald: #059669;
+        --ps-gold: #f59e0b;
+        --ps-gold-light: #fbbf24;
+        --ps-dark: #0c1220;
+        --ps-surface: #f8fafc;
+        --ps-surface-warm: #fefce8;
+        --ps-border: rgba(15, 23, 42, 0.06);
+        --ps-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+        --ps-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+        --ps-shadow-lg: 0 20px 50px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+        --ps-shadow-xl: 0 25px 60px rgba(13,148,136,0.12), 0 10px 25px rgba(0,0,0,0.06);
+        --ps-radius-sm: 10px;
+        --ps-radius-md: 16px;
+        --ps-radius-lg: 22px;
+        --ps-radius-xl: 28px;
+        --ps-transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-fast: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ═══════════════ PAGE HEADER ═══════════════ */
+    .ps-policy-hero {
+        text-align: center; margin-bottom: 56px;
+        position: relative;
+    }
+    .ps-policy-hero::after {
+        content: ''; position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%);
+        width: 500px; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--ps-border), transparent);
+    }
+    .ps-hero-tag {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.62rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ps-gold); padding: 6px 16px;
+        background: var(--ps-surface-warm);
+        border-radius: 50px; border: 1px solid rgba(245,158,11,0.12);
+        margin-bottom: 20px;
+    }
+    .ps-hero-tag-dot {
+        width: 5px; height: 5px; border-radius: 50%;
+        background: var(--ps-gold);
+    }
+    .ps-hero-tag i { font-size: 0.55rem; }
+    .ps-policy-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.6rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0 0 12px; line-height: 1.15;
+    }
+    .ps-gradient-text {
+        background: linear-gradient(135deg, var(--ps-teal) 0%, var(--ps-emerald) 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .ps-hero-meta {
+        font-size: 0.75rem; color: #94a3b8; font-weight: 600;
+        letter-spacing: 0.06em;
+    }
+    .ps-hero-meta i { color: var(--ps-teal); }
+    .ps-hero-divider {
+        display: flex; align-items: center; justify-content: center;
+        gap: 12px; margin-top: 24px;
+    }
+    .ps-hero-divider-line {
+        width: 40px; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--ps-border));
+    }
+    .ps-hero-divider-line:last-child {
+        background: linear-gradient(90deg, var(--ps-border), transparent);
+    }
+    .ps-hero-divider-diamond {
+        width: 8px; height: 8px; border-radius: 2px;
+        background: var(--ps-gold); transform: rotate(45deg);
+    }
+
+    /* ═══════════════ POLICY CARD ═══════════════ */
+    .ps-policy-card {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-md);
+        padding: 48px; position: relative; overflow: hidden;
+    }
+    .ps-policy-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, var(--ps-teal), var(--ps-emerald), var(--ps-gold), var(--ps-teal));
+        background-size: 200% 100%;
+        animation: psBarShimmer 6s linear infinite;
+    }
+    @keyframes psBarShimmer {
+        0% { background-position: 0% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    /* ═══════════════ SECTIONS ═══════════════ */
+    .ps-policy-section {
+        margin-bottom: 48px; padding-bottom: 48px;
+        border-bottom: 1px solid var(--ps-border);
+    }
+    .ps-policy-section:last-child {
+        margin-bottom: 0; padding-bottom: 0; border-bottom: none;
+    }
+
+    .ps-section-header {
+        display: flex; align-items: center; gap: 18px;
+        margin-bottom: 20px;
+    }
+    .ps-section-icon {
+        width: 52px; height: 52px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.15rem; flex-shrink: 0;
+        transition: var(--ps-transition-bounce);
+        position: relative;
+    }
+    .ps-policy-section:hover .ps-section-icon {
+        transform: rotate(-8deg) scale(1.08);
+    }
+    .ps-si-teal {
+        background: rgba(13,148,136,0.08);
+        color: var(--ps-teal);
+        border: 1px solid rgba(13,148,136,0.06);
+    }
+    .ps-si-gold {
+        background: rgba(245,158,11,0.08);
+        color: var(--ps-gold);
+        border: 1px solid rgba(245,158,11,0.06);
+    }
+    .ps-si-emerald {
+        background: rgba(5,150,105,0.08);
+        color: var(--ps-emerald);
+        border: 1px solid rgba(5,150,105,0.06);
+    }
+    .ps-si-rose {
+        background: rgba(244,63,94,0.06);
+        color: #f43f5e;
+        border: 1px solid rgba(244,63,94,0.06);
+    }
+    .ps-si-violet {
+        background: rgba(139,92,246,0.06);
+        color: #8b5cf6;
+        border: 1px solid rgba(139,92,246,0.06);
+    }
+
+    .ps-section-num {
+        position: absolute; top: -4px; right: -4px;
+        width: 18px; height: 18px; border-radius: 50%;
+        background: var(--ps-dark); color: white;
+        font-size: 0.55rem; font-weight: 900;
+        display: flex; align-items: center; justify-content: center;
+    }
+
+    .ps-section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0; line-height: 1.3;
+    }
+
+    .ps-section-text {
+        font-size: 0.92rem; color: #64748b;
+        line-height: 1.85; margin: 0;
+    }
+    .ps-section-text strong { color: var(--ps-dark); font-weight: 700; }
+
+    /* Custom List */
+    .ps-check-list {
+        list-style: none; padding: 0; margin: 20px 0 0;
+        display: flex; flex-direction: column; gap: 14px;
+    }
+    .ps-check-item {
+        display: flex; align-items: flex-start; gap: 14px;
+        padding: 16px; background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+        border: 1px solid var(--ps-border);
+        transition: var(--ps-transition-fast);
+    }
+    .ps-check-item:hover {
+        border-color: rgba(13,148,136,0.12);
+        transform: translateX(4px);
+    }
+    .ps-check-icon {
+        width: 28px; height: 28px; border-radius: 8px;
+        background: linear-gradient(135deg, var(--ps-gold), var(--ps-gold-light));
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 0.6rem; flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .ps-check-label {
+        font-size: 0.88rem; color: #475569; line-height: 1.6; margin: 0;
+    }
+    .ps-check-label strong { color: var(--ps-dark); }
+
+    /* Usage Grid */
+    .ps-usage-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+        margin-top: 20px;
+    }
+    .ps-usage-card {
+        display: flex; align-items: center; gap: 14px;
+        padding: 20px; background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+        border: 1px solid var(--ps-border);
+        transition: var(--ps-transition);
+    }
+    .ps-usage-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--ps-shadow-md);
+        border-color: rgba(13,148,136,0.12);
+    }
+    .ps-usage-icon {
+        width: 44px; height: 44px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; flex-shrink: 0;
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-usage-card:hover .ps-usage-icon { transform: rotate(-8deg) scale(1.1); }
+    .ps-ui-teal { background: rgba(13,148,136,0.08); color: var(--ps-teal); }
+    .ps-ui-gold { background: rgba(245,158,11,0.08); color: var(--ps-gold); }
+    .ps-usage-label {
+        font-size: 0.85rem; font-weight: 700; color: var(--ps-dark);
+        line-height: 1.4;
+    }
+
+    /* Highlight Box */
+    .ps-highlight-box {
+        margin-top: 20px; padding: 20px 24px;
+        background: rgba(13,148,136,0.04);
+        border: 1px solid rgba(13,148,136,0.08);
+        border-radius: var(--ps-radius-md);
+        border-left: 4px solid var(--ps-teal);
+        position: relative;
+    }
+    .ps-highlight-box p {
+        font-size: 0.9rem; color: #475569;
+        line-height: 1.7; margin: 0;
+    }
+    .ps-highlight-box strong { color: var(--ps-teal-dark); }
+    .ps-highlight-icon {
+        position: absolute; top: -12px; right: 20px;
+        width: 24px; height: 24px; border-radius: 50%;
+        background: white; border: 1px solid rgba(13,148,136,0.1);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--ps-teal); font-size: 0.6rem;
+        box-shadow: var(--ps-shadow-sm);
+    }
+
+    /* Contact Row */
+    .ps-contact-row {
+        display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap;
+    }
+    .ps-contact-chip {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 14px 22px; background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+        border: 1px solid var(--ps-border);
+        text-decoration: none; color: var(--ps-dark);
+        font-size: 0.85rem; font-weight: 700;
+        transition: var(--ps-transition);
+    }
+    .ps-contact-chip i {
+        width: 32px; height: 32px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.8rem;
+    }
+    .ps-cc-teal i { background: rgba(13,148,136,0.08); color: var(--ps-teal); }
+    .ps-cc-gold i { background: rgba(245,158,11,0.08); color: var(--ps-gold); }
+    .ps-contact-chip:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--ps-shadow-md);
+        border-color: rgba(13,148,136,0.15);
+    }
+
+    /* ═══════════════ BACK BUTTON ═══════════════ */
+    .ps-back-wrap {
+        text-align: center; margin-top: 56px;
+    }
+    .ps-back-btn {
+        display: inline-flex; align-items: center; gap: 10px;
+        height: 52px; padding: 0 36px;
+        border: 2px solid var(--ps-border); border-radius: 60px;
+        background: white; color: var(--ps-dark);
+        font-size: 0.88rem; font-weight: 700;
+        text-decoration: none; transition: var(--ps-transition);
+    }
+    .ps-back-btn i {
+        transition: var(--ps-transition);
+    }
+    .ps-back-btn:hover {
+        border-color: var(--ps-teal); color: var(--ps-teal);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(13,148,136,0.1);
+    }
+    .ps-back-btn:hover i { transform: translateX(-4px); }
+
+    /* ═══════════════ REVEAL ═══════════════ */
+    .ps-reveal {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-reveal.ps-visible { opacity: 1; transform: translateY(0); }
+    .ps-stagger {
+        opacity: 0; transform: translateY(24px);
+        transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-stagger.ps-visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .ps-policy-title { font-size: 2.2rem; }
+        .ps-policy-card { padding: 40px 32px; }
+    }
+
+    @media (max-width: 767px) {
+        .ps-policy-hero { margin-bottom: 40px; }
+        .ps-policy-hero::after { bottom: -20px; width: 300px; }
+        .ps-policy-title { font-size: 1.8rem; }
+        .ps-policy-card { padding: 28px 22px; border-radius: var(--ps-radius-lg); }
+        .ps-section-header { gap: 14px; }
+        .ps-section-icon { width: 46px; height: 46px; font-size: 1rem; border-radius: 14px; }
+        .ps-section-num { width: 16px; height: 16px; font-size: 0.5rem; }
+        .ps-section-title { font-size: 1.1rem; }
+        .ps-section-text { font-size: 0.85rem; }
+        .ps-check-item { padding: 14px; gap: 12px; }
+        .ps-check-label { font-size: 0.82rem; }
+        .ps-usage-grid { grid-template-columns: 1fr; }
+        .ps-policy-section { margin-bottom: 36px; padding-bottom: 36px; }
+        .ps-contact-row { flex-direction: column; }
+        .ps-contact-chip { justify-content: center; }
+    }
+
+    @media (max-width: 400px) {
+        .ps-check-icon { width: 24px; height: 24px; font-size: 0.5rem; border-radius: 6px; }
+        .ps-usage-icon { width: 38px; height: 38px; font-size: 0.85rem; }
+    }
+</style>
+
+<div class="container py-4 py-lg-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <!-- Header -->
+            <div class="ps-policy-hero ps-reveal">
+                <div class="ps-hero-tag">
+                    <span class="ps-hero-tag-dot"></span>
+                    <span>Legal</span>
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h1 class="ps-policy-title">Privacy <span class="ps-gradient-text">Policy</span></h1>
+                <div class="ps-hero-meta">
+                    <i class="fa-regular fa-clock"></i>
+                    Last Updated: April 2026
+                </div>
+                <div class="ps-hero-divider">
+                    <div class="ps-hero-divider-line"></div>
+                    <div class="ps-hero-divider-diamond"></div>
+                    <div class="ps-hero-divider-line"></div>
+                </div>
+            </div>
+
+            <!-- Card -->
+            <div class="ps-policy-card ps-reveal">
+
+                <!-- Section 1 -->
+                <div class="ps-policy-section ps-stagger" style="--d: 0;">
+                    <div class="ps-section-header">
+                        <div class="ps-section-icon ps-si-teal">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span class="ps-section-num">1</span>
+                        </div>
+                        <h4 class="ps-section-title">Introduction</h4>
+                    </div>
+                    <p class="ps-section-text">
+                        Welcome to <strong>Ponno Sebaa</strong>. We value your privacy and are committed to protecting your personal data. This policy explains how we collect, use, and safeguard your information when you visit our website and purchase our products. Your trust is our primary growth.
+                    </p>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="ps-policy-section ps-stagger" style="--d: 1;">
+                    <div class="ps-section-header">
+                        <div class="ps-section-icon ps-si-gold">
+                            <i class="fa-solid fa-database"></i>
+                            <span class="ps-section-num">2</span>
+                        </div>
+                        <h4 class="ps-section-title">Information Collection</h4>
+                    </div>
+                    <p class="ps-section-text">
+                        When you place an order or contact us, we collect specific information to ensure a seamless delivery experience:
+                    </p>
+                    <ul class="ps-check-list">
+                        <li class="ps-check-item">
+                            <div class="ps-check-icon"><i class="fa-solid fa-check"></i></div>
+                            <p class="ps-check-label"><strong>Identity Data:</strong> Full name and contact number for order verification.</p>
+                        </li>
+                        <li class="ps-check-item">
+                            <div class="ps-check-icon"><i class="fa-solid fa-check"></i></div>
+                            <p class="ps-check-label"><strong>Logistic Data:</strong> Detailed delivery address for accurate shipping.</p>
+                        </li>
+                        <li class="ps-check-item">
+                            <div class="ps-check-icon"><i class="fa-solid fa-check"></i></div>
+                            <p class="ps-check-label"><strong>Order History:</strong> Details of purchased items and your unique Order ID.</p>
+                        </li>
+                        <li class="ps-check-item">
+                            <div class="ps-check-icon"><i class="fa-solid fa-check"></i></div>
+                            <p class="ps-check-label"><strong>Digital Footprint:</strong> Session cookies to maintain your shopping cart items.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="ps-policy-section ps-stagger" style="--d: 2;">
+                    <div class="ps-section-header">
+                        <div class="ps-section-icon ps-si-emerald">
+                            <i class="fa-solid fa-user-check"></i>
+                            <span class="ps-section-num">3</span>
+                        </div>
+                        <h4 class="ps-section-title">Usage of Data</h4>
+                    </div>
+                    <p class="ps-section-text">
+                        Your data is strictly used for operational purposes within Ponno Sebaa:
+                    </p>
+                    <div class="ps-usage-grid">
+                        <div class="ps-usage-card">
+                            <div class="ps-usage-icon ps-ui-teal">
+                                <i class="fa-solid fa-truck-fast"></i>
+                            </div>
+                            <span class="ps-usage-label">Order Fulfillment & Logistics</span>
+                        </div>
+                        <div class="ps-usage-card">
+                            <div class="ps-usage-icon ps-ui-gold">
+                                <i class="fa-solid fa-headset"></i>
+                            </div>
+                            <span class="ps-usage-label">Customer Support & Updates</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="ps-policy-section ps-stagger" style="--d: 3;">
+                    <div class="ps-section-header">
+                        <div class="ps-section-icon ps-si-rose">
+                            <i class="fa-solid fa-lock"></i>
+                            <span class="ps-section-num">4</span>
+                        </div>
+                        <h4 class="ps-section-title">Data Security</h4>
+                    </div>
+                    <div class="ps-highlight-box">
+                        <div class="ps-highlight-icon"><i class="fa-solid fa-shield-check"></i></div>
+                        <p>
+                            We implement industry-standard encryption and security measures. <strong>Ponno Sebaa does not sell, trade, or rent</strong> your personal identification information to third parties or marketing agencies.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Section 5 -->
+                <div class="ps-policy-section ps-stagger" style="--d: 4;">
+                    <div class="ps-section-header">
+                        <div class="ps-section-icon ps-si-violet">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                            <span class="ps-section-num">5</span>
+                        </div>
+                        <h4 class="ps-section-title">Get In Touch</h4>
+                    </div>
+                    <p class="ps-section-text">
+                        If you have questions regarding your data privacy, our team is ready to assist you:
+                    </p>
+                    <div class="ps-contact-row">
+                        <a href="/contact" class="ps-contact-chip ps-cc-teal">
+                            <i class="fa-solid fa-headset"></i>
+                            <span>Contact Page</span>
+                        </a>
+                        <a href="mailto:ponnoSebaa@gmail.com" class="ps-contact-chip ps-cc-gold">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>ponnoSebaa@gmail.com</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Back Button -->
+            <div class="ps-back-wrap ps-reveal">
+                <a href="/" class="ps-back-btn">
+                    <i class="fa-solid fa-arrow-left-long"></i>
+                    <span>Return to Shopping</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('ps-visible'); });
+    }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.ps-reveal').forEach(el => revealObs.observe(el));
+
+    const staggerObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const delay = parseInt(getComputedStyle(e.target).getPropertyValue('--d') || '0');
+                e.target.style.transitionDelay = `${delay * 0.12}s`;
+                e.target.classList.add('ps-visible');
+            }
+        });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.ps-stagger').forEach(el => staggerObs.observe(el));
+</script>
+{% endblock %}

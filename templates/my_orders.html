@@ -1,0 +1,536 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap');
+
+    :root {
+        --ps-teal: #0d9488;
+        --ps-teal-deep: #0f766e;
+        --ps-teal-dark: #134e4a;
+        --ps-emerald: #059669;
+        --ps-gold: #f59e0b;
+        --ps-gold-light: #fbbf24;
+        --ps-dark: #0c1220;
+        --ps-surface: #f8fafc;
+        --ps-surface-warm: #fefce8;
+        --ps-border: rgba(15, 23, 42, 0.06);
+        --ps-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+        --ps-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+        --ps-shadow-lg: 0 20px 50px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+        --ps-shadow-xl: 0 25px 60px rgba(13,148,136,0.12), 0 10px 25px rgba(0,0,0,0.06);
+        --ps-radius-sm: 10px;
+        --ps-radius-md: 16px;
+        --ps-radius-lg: 22px;
+        --ps-radius-xl: 28px;
+        --ps-transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-fast: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ═══════════════ PAGE HEADER ═══════════════ */
+    .ps-orders-header {
+        text-align: center; margin-bottom: 40px;
+    }
+    .ps-header-tag {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.62rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ps-gold); padding: 6px 16px;
+        background: var(--ps-surface-warm);
+        border-radius: 50px; border: 1px solid rgba(245,158,11,0.12);
+        margin-bottom: 16px;
+    }
+    .ps-header-tag-dot {
+        width: 5px; height: 5px; border-radius: 50%;
+        background: var(--ps-gold);
+    }
+    .ps-orders-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0 0 8px; line-height: 1.2;
+    }
+    .ps-gradient-text {
+        background: linear-gradient(135deg, var(--ps-teal) 0%, var(--ps-emerald) 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .ps-orders-desc {
+        font-size: 0.9rem; color: #94a3b8; margin: 0;
+    }
+
+    /* ═══════════════ SEARCH BAR ═══════════════ */
+    .ps-search-wrap {
+        max-width: 560px; margin: 28px auto 0;
+    }
+    .ps-search-bar {
+        display: flex; align-items: center;
+        background: white; border-radius: 60px;
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-md);
+        padding: 6px 6px 6px 24px;
+        transition: var(--ps-transition);
+    }
+    .ps-search-bar:focus-within {
+        border-color: var(--ps-teal);
+        box-shadow: 0 0 0 4px rgba(13,148,136,0.08), var(--ps-shadow-md);
+    }
+    .ps-search-icon {
+        color: #cbd5e1; font-size: 0.9rem; margin-right: 12px; flex-shrink: 0;
+        transition: var(--ps-transition-fast);
+    }
+    .ps-search-bar:focus-within .ps-search-icon { color: var(--ps-teal); }
+    .ps-search-input {
+        flex: 1; border: none; outline: none;
+        font-size: 0.92rem; font-weight: 600; color: var(--ps-dark);
+        background: transparent; padding: 12px 0;
+    }
+    .ps-search-input::placeholder { color: #cbd5e1; font-weight: 400; }
+    .ps-search-btn {
+        width: 48px; height: 48px; border-radius: 50%;
+        border: none; flex-shrink: 0;
+        background: var(--ps-dark); color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; cursor: pointer;
+        transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-search-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .ps-search-btn i { position: relative; z-index: 1; }
+    .ps-search-btn:hover::before { opacity: 1; }
+    .ps-search-btn:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 20px rgba(13,148,136,0.3);
+    }
+
+    /* ═══════════════ RESULTS BAR ═══════════════ */
+    .ps-results-bar {
+        display: flex; align-items: center; gap: 12px;
+        margin-bottom: 24px;
+    }
+    .ps-results-line {
+        width: 30px; height: 3px; border-radius: 10px;
+        background: var(--ps-gold);
+    }
+    .ps-results-text {
+        font-size: 0.72rem; font-weight: 800;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        color: #94a3b8;
+    }
+    .ps-results-count {
+        color: var(--ps-teal); font-weight: 800;
+    }
+
+    /* ═══════════════ ORDER CARD ═══════════════ */
+    .ps-order-card {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        overflow: hidden; position: relative;
+        transition: var(--ps-transition);
+        box-shadow: var(--ps-shadow-sm);
+        margin-bottom: 20px;
+    }
+    .ps-order-card::before {
+        content: ''; position: absolute; inset: -1px;
+        border-radius: var(--ps-radius-xl);
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        z-index: -1; opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .ps-order-card:hover::before { opacity: 0.4; }
+    .ps-order-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--ps-shadow-xl);
+        border-color: transparent;
+    }
+    .ps-order-body { padding: 28px; }
+
+    /* Card top row */
+    .ps-order-top {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    }
+    .ps-order-id-label {
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--ps-gold); margin-bottom: 4px;
+    }
+    .ps-order-id-value {
+        font-size: 1.1rem; font-weight: 900; color: var(--ps-dark);
+        letter-spacing: 0.5px; font-family: 'Inter', monospace;
+    }
+
+    /* Status badge */
+    .ps-status-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.65rem; font-weight: 800;
+        padding: 6px 16px; border-radius: 50px;
+        letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .ps-status-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+    }
+    .ps-status-delivered {
+        background: rgba(5,150,105,0.08);
+        color: var(--ps-emerald);
+        border: 1px solid rgba(5,150,105,0.1);
+    }
+    .ps-status-delivered .ps-status-dot { background: var(--ps-emerald); }
+    .ps-status-processing {
+        background: rgba(13,148,136,0.08);
+        color: var(--ps-teal);
+        border: 1px solid rgba(13,148,136,0.1);
+    }
+    .ps-status-processing .ps-status-dot {
+        background: var(--ps-teal);
+        animation: psStatusPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes psStatusPulse {
+        0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+    }
+    .ps-status-cancelled {
+        background: rgba(239,68,68,0.08);
+        color: #ef4444;
+        border: 1px solid rgba(239,68,68,0.1);
+    }
+    .ps-status-cancelled .ps-status-dot { background: #ef4444; }
+    .ps-status-shipped {
+        background: rgba(59,130,246,0.08);
+        color: #3b82f6;
+        border: 1px solid rgba(59,130,246,0.1);
+    }
+    .ps-status-shipped .ps-status-dot { background: #3b82f6; }
+
+    .ps-order-date {
+        font-size: 0.7rem; color: #94a3b8; font-weight: 600;
+        margin-top: 8px; text-align: right;
+    }
+
+    /* Items list */
+    .ps-order-items {
+        background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+        padding: 14px; margin-bottom: 24px;
+    }
+    .ps-order-item {
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px;
+        background: white;
+        border-radius: var(--ps-radius-sm);
+        border: 1px solid var(--ps-border);
+        margin-bottom: 10px;
+        transition: var(--ps-transition-fast);
+    }
+    .ps-order-item:last-child { margin-bottom: 0; }
+    .ps-order-item:hover { border-color: rgba(13,148,136,0.15); transform: translateX(4px); }
+
+    .ps-oi-img {
+        width: 52px; height: 52px; border-radius: 10px;
+        object-fit: cover; flex-shrink: 0;
+        border: 1px solid var(--ps-border);
+    }
+    .ps-oi-info { flex: 1; min-width: 0; }
+    .ps-oi-name {
+        font-size: 0.82rem; font-weight: 700; color: var(--ps-dark);
+        margin: 0; line-height: 1.35;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ps-oi-meta {
+        font-size: 0.68rem; color: #94a3b8; margin-top: 3px;
+    }
+    .ps-oi-meta strong { color: var(--ps-teal-dark); }
+    .ps-oi-total {
+        font-size: 0.88rem; font-weight: 800; color: var(--ps-dark);
+        flex-shrink: 0;
+    }
+
+    /* Card footer */
+    .ps-order-footer {
+        display: flex; justify-content: space-between; align-items: center;
+        padding-top: 20px; border-top: 1px solid var(--ps-border);
+        flex-wrap: wrap; gap: 16px;
+    }
+    .ps-total-label {
+        font-size: 0.68rem; font-weight: 700;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 2px;
+    }
+    .ps-total-value {
+        font-size: 1.4rem; font-weight: 900;
+        color: var(--ps-teal-dark); line-height: 1;
+    }
+    .ps-total-currency { font-size: 0.85rem; font-weight: 700; }
+
+    .ps-track-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        height: 44px; padding: 0 24px;
+        border: none; border-radius: 60px;
+        background: var(--ps-dark); color: white;
+        font-size: 0.8rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        text-decoration: none; position: relative; overflow: hidden;
+    }
+    .ps-track-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-track-btn span, .ps-track-btn i { position: relative; z-index: 1; }
+    .ps-track-btn:hover::before { opacity: 1; }
+    .ps-track-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(13,148,136,0.3);
+        color: white;
+    }
+    .ps-track-icon {
+        width: 22px; height: 22px; border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.6rem;
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-track-btn:hover .ps-track-icon { transform: rotate(-15deg) scale(1.15); }
+
+    /* ═══════════════ EMPTY STATE ═══════════════ */
+    .ps-empty-card {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-sm);
+        padding: 80px 40px; text-align: center;
+        max-width: 500px; margin: 40px auto;
+    }
+    .ps-empty-icon-wrap {
+        width: 110px; height: 110px; border-radius: 50%;
+        background: var(--ps-surface);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 28px; position: relative;
+    }
+    .ps-empty-icon-wrap i { font-size: 2.5rem; color: #cbd5e1; }
+    .ps-empty-icon-wrap::after {
+        content: ''; position: absolute; inset: -8px;
+        border-radius: 50%; border: 2px dashed var(--ps-border);
+        animation: psEmptySpin 25s linear infinite;
+    }
+    @keyframes psEmptySpin { to { transform: rotate(360deg); } }
+    .ps-empty-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem; font-weight: 700;
+        color: var(--ps-dark); margin-bottom: 10px;
+    }
+    .ps-empty-desc {
+        font-size: 0.9rem; color: #94a3b8;
+        margin-bottom: 8px; line-height: 1.7;
+    }
+    .ps-empty-phone {
+        font-size: 0.88rem; font-weight: 800;
+        color: var(--ps-teal-dark); margin-bottom: 28px;
+    }
+    .ps-empty-btn {
+        display: inline-flex; align-items: center; gap: 10px;
+        height: 50px; padding: 0 32px;
+        border: none; border-radius: 60px;
+        background: var(--ps-dark); color: white;
+        font-size: 0.85rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        text-decoration: none; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-empty-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-empty-btn span, .ps-empty-btn i { position: relative; z-index: 1; }
+    .ps-empty-btn:hover::before { opacity: 1; }
+    .ps-empty-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(13,148,136,0.3);
+        color: white;
+    }
+
+    /* ═══════════════ REVEAL ═══════════════ */
+    .ps-reveal {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-reveal.ps-visible { opacity: 1; transform: translateY(0); }
+    .ps-stagger {
+        opacity: 0; transform: translateY(24px);
+        transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-stagger.ps-visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 767px) {
+        .ps-orders-title { font-size: 1.5rem; }
+        .ps-orders-desc { font-size: 0.82rem; }
+        .ps-search-bar { padding: 5px 5px 5px 18px; }
+        .ps-search-input { font-size: 0.85rem; padding: 10px 0; }
+        .ps-search-btn { width: 44px; height: 44px; }
+        .ps-order-body { padding: 20px; }
+        .ps-order-card { border-radius: var(--ps-radius-lg); margin-bottom: 16px; }
+        .ps-order-id-value { font-size: 0.95rem; }
+        .ps-order-items { padding: 10px; }
+        .ps-order-item { padding: 10px; gap: 10px; }
+        .ps-oi-img { width: 44px; height: 44px; }
+        .ps-oi-name { font-size: 0.78rem; }
+        .ps-oi-total { font-size: 0.82rem; }
+        .ps-total-value { font-size: 1.2rem; }
+        .ps-order-footer { gap: 12px; }
+        .ps-track-btn { height: 40px; padding: 0 20px; font-size: 0.72rem; }
+        .ps-empty-card { padding: 60px 24px; margin: 24px auto; }
+        .ps-empty-title { font-size: 1.3rem; }
+    }
+
+    @media (max-width: 400px) {
+        .ps-order-top { flex-direction: column; }
+        .ps-order-date { text-align: left; margin-top: 4px; }
+        .ps-oi-meta { font-size: 0.62rem; }
+    }
+</style>
+
+<div class="container py-4 py-lg-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <!-- Header -->
+            <div class="ps-orders-header ps-reveal">
+                <div class="ps-header-tag">
+                    <span class="ps-header-tag-dot"></span>
+                    My Account
+                </div>
+                <h1 class="ps-orders-title">Order <span class="ps-gradient-text">History</span></h1>
+                <p class="ps-orders-desc">Enter your mobile number to find all your Ponno Sebaa parcels</p>
+
+                <div class="ps-search-wrap">
+                    <form action="/my-orders" method="POST" class="ps-search-bar">
+                        <i class="fa-solid fa-magnifying-glass ps-search-icon"></i>
+                        <input type="tel" name="phone" class="ps-search-input"
+                               placeholder="01XXXXXXXXX" maxlength="11" value="{{ phone or '' }}" required>
+                        <button class="ps-search-btn" type="submit" aria-label="Find Orders">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% if orders %}
+            <!-- Results bar -->
+            <div class="ps-results-bar ps-reveal">
+                <div class="ps-results-line"></div>
+                <span class="ps-results-text">
+                    Found <span class="ps-results-count">{{ orders|length }}</span> Shipments
+                </span>
+            </div>
+
+            <!-- Order Cards -->
+            {% for order in orders %}
+            <div class="ps-order-card ps-stagger" style="--d: {{ loop.index0 }};">
+                <div class="ps-order-body">
+
+                    <div class="ps-order-top">
+                        <div>
+                            <div class="ps-order-id-label">Package ID</div>
+                            <div class="ps-order-id-value">#{{ order.order_id if order.order_id else order._id|string|last4 }}</div>
+                        </div>
+                        <div>
+                            <span class="ps-status-badge
+                                {% if order.status == 'Delivered' %}ps-status-delivered
+                                {% elif order.status == 'Cancelled' %}ps-status-cancelled
+                                {% elif order.status == 'Shipped' %}ps-status-shipped
+                                {% else %}ps-status-processing{% endif %}">
+                                <span class="ps-status-dot"></span>
+                                {{ order.status if order.status else 'Processing' }}
+                            </span>
+                            <div class="ps-order-date">
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                {% if order.created_at %}{{ order.created_at.strftime('%d %b, %Y') }}{% else %}Just Now{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if order.items_details %}
+                    <div class="ps-order-items">
+                        {% for item in order.items_details %}
+                        <div class="ps-order-item">
+                            <img src="{{ item.main_image if item.main_image else 'https://placehold.co/100x100/f1f5f9/94a3b8?text=Item' }}"
+                                 class="ps-oi-img" alt="{{ item.title }}" loading="lazy">
+                            <div class="ps-oi-info">
+                                <p class="ps-oi-name" title="{{ item.title }}">{{ item.title }}</p>
+                                <div class="ps-oi-meta">
+                                    Qty: {{ item.quantity }} &bull; <strong>৳{{ item.price }}</strong> each
+                                </div>
+                            </div>
+                            <span class="ps-oi-total">৳{{ item.subtotal }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="ps-order-footer">
+                        <div>
+                            <div class="ps-total-label">Amount Paid</div>
+                            <span class="ps-total-value">
+                                <span class="ps-total-currency">৳</span>{{ order.total }}
+                            </span>
+                        </div>
+                        <form action="/track" method="POST" style="margin:0;">
+                            <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                            <button type="submit" class="ps-track-btn">
+                                <span>Live Tracking</span>
+                                <span class="ps-track-icon"><i class="fa-solid fa-location-arrow"></i></span>
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+            {% elif phone %}
+            <!-- Empty state -->
+            <div class="ps-empty-card ps-reveal">
+                <div class="ps-empty-icon-wrap">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <h3 class="ps-empty-title">No Records Found</h3>
+                <p class="ps-empty-desc">We couldn't find any orders linked to this number. Please double-check and try again.</p>
+                <div class="ps-empty-phone">
+                    <i class="fa-solid fa-phone me-1"></i> {{ phone }}
+                </div>
+                <a href="/" class="ps-empty-btn">
+                    <span>Start Shopping</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('ps-visible'); });
+    }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+
+    document.querySelectorAll('.ps-reveal').forEach(el => revealObs.observe(el));
+
+    const staggerObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const delay = parseInt(getComputedStyle(e.target).getPropertyValue('--d') || '0');
+                e.target.style.transitionDelay = `${delay * 0.1}s`;
+                e.target.classList.add('ps-visible');
+            }
+        });
+    }, { threshold: 0.05 });
+
+    document.querySelectorAll('.ps-stagger').forEach(el => staggerObs.observe(el));
+</script>
+{% endblock %}

@@ -1,0 +1,697 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap');
+
+    :root {
+        --ps-teal: #0d9488;
+        --ps-teal-deep: #0f766e;
+        --ps-teal-dark: #134e4a;
+        --ps-emerald: #059669;
+        --ps-gold: #f59e0b;
+        --ps-gold-light: #fbbf24;
+        --ps-dark: #0c1220;
+        --ps-surface: #f8fafc;
+        --ps-surface-warm: #fefce8;
+        --ps-border: rgba(15, 23, 42, 0.06);
+        --ps-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+        --ps-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+        --ps-shadow-lg: 0 20px 50px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+        --ps-shadow-xl: 0 25px 60px rgba(13,148,136,0.12), 0 10px 25px rgba(0,0,0,0.06);
+        --ps-radius-sm: 10px;
+        --ps-radius-md: 16px;
+        --ps-radius-lg: 22px;
+        --ps-radius-xl: 28px;
+        --ps-transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-fast: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ═══════════════ PAGE HEADER ═══════════════ */
+    .ps-track-header {
+        text-align: center; margin-bottom: 40px;
+    }
+    .ps-header-tag {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.62rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ps-gold); padding: 6px 16px;
+        background: var(--ps-surface-warm);
+        border-radius: 50px; border: 1px solid rgba(245,158,11,0.12);
+        margin-bottom: 16px;
+    }
+    .ps-header-tag-dot {
+        width: 5px; height: 5px; border-radius: 50%;
+        background: var(--ps-gold);
+    }
+    .ps-track-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0 0 10px; line-height: 1.2;
+    }
+    .ps-gradient-text {
+        background: linear-gradient(135deg, var(--ps-teal) 0%, var(--ps-emerald) 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .ps-track-desc {
+        font-size: 0.9rem; color: #94a3b8;
+        max-width: 480px; margin: 0 auto; line-height: 1.7;
+    }
+
+    /* ═══════════════ SEARCH BAR ═══════════════ */
+    .ps-search-wrap {
+        max-width: 640px; margin: 0 auto 56px;
+    }
+    .ps-search-bar {
+        display: flex; align-items: center;
+        background: white; border-radius: 60px;
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-md);
+        padding: 6px 6px 6px 8px;
+        transition: var(--ps-transition);
+    }
+    .ps-search-bar:focus-within {
+        border-color: var(--ps-teal);
+        box-shadow: 0 0 0 4px rgba(13,148,136,0.08), var(--ps-shadow-lg);
+    }
+    .ps-search-icon-wrap {
+        width: 48px; height: 48px; border-radius: 50%;
+        background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(5,150,105,0.04));
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; margin-right: 12px;
+        color: var(--ps-teal); font-size: 1.1rem;
+        transition: var(--ps-transition-fast);
+    }
+    .ps-search-bar:focus-within .ps-search-icon-wrap {
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 4px 16px rgba(13,148,136,0.25);
+    }
+    .ps-search-input {
+        flex: 1; border: none; outline: none;
+        font-size: 0.95rem; font-weight: 600; color: var(--ps-dark);
+        background: transparent; padding: 14px 0;
+    }
+    .ps-search-input::placeholder { color: #cbd5e1; font-weight: 400; }
+    .ps-search-btn {
+        height: 48px; padding: 0 32px; border-radius: 50px;
+        border: none; flex-shrink: 0;
+        background: var(--ps-dark); color: white;
+        font-size: 0.82rem; font-weight: 800;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+        white-space: nowrap;
+    }
+    .ps-search-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .ps-search-btn span { position: relative; z-index: 1; }
+    .ps-search-btn:hover::before { opacity: 1; }
+    .ps-search-btn:hover {
+        transform: scale(1.03);
+        box-shadow: 0 6px 20px rgba(13,148,136,0.3);
+        color: white;
+    }
+
+    /* ═══════════════ INFO CARDS ═══════════════ */
+    .ps-info-card {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-sm);
+        padding: 28px; margin-bottom: 20px;
+        transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-info-card:hover { box-shadow: var(--ps-shadow-md); }
+    .ps-info-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, var(--ps-teal), var(--ps-emerald), var(--ps-gold));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .ps-info-card:hover::before { opacity: 1; }
+
+    .ps-card-label {
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 18px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .ps-card-label::after {
+        content: ''; flex: 1; height: 1px;
+        background: var(--ps-border);
+    }
+
+    /* Destination block */
+    .ps-dest-row {
+        display: flex; align-items: center; gap: 16px;
+        margin-bottom: 18px;
+    }
+    .ps-dest-icon {
+        width: 52px; height: 52px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.15rem; flex-shrink: 0;
+        background: rgba(13,148,136,0.08); color: var(--ps-teal);
+        border: 1px solid rgba(13,148,136,0.06);
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-info-card:hover .ps-dest-icon { transform: rotate(-8deg) scale(1.08); }
+    .ps-dest-city {
+        font-size: 1rem; font-weight: 800; color: var(--ps-dark);
+        margin: 0; line-height: 1.3;
+    }
+    .ps-dest-sub {
+        font-size: 0.7rem; color: #94a3b8; margin: 2px 0 0;
+    }
+
+    .ps-address-box {
+        background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+        padding: 18px; border: 1px solid var(--ps-border);
+    }
+    .ps-address-name {
+        font-size: 0.88rem; font-weight: 800;
+        color: var(--ps-teal-dark); margin: 0 0 10px;
+    }
+    .ps-address-line {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 0.78rem; color: #64748b; margin-bottom: 6px;
+    }
+    .ps-address-line:last-child { margin-bottom: 0; }
+    .ps-address-line i {
+        width: 20px; text-align: center;
+        color: #94a3b8; font-size: 0.7rem;
+    }
+
+    /* Items list */
+    .ps-items-scroll {
+        max-height: 220px; overflow-y: auto;
+        scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent;
+    }
+    .ps-items-scroll::-webkit-scrollbar { width: 3px; }
+    .ps-items-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+    .ps-track-item {
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px; background: var(--ps-surface);
+        border-radius: var(--ps-radius-sm);
+        border: 1px solid var(--ps-border);
+        margin-bottom: 10px;
+        transition: var(--ps-transition-fast);
+    }
+    .ps-track-item:last-child { margin-bottom: 0; }
+    .ps-track-item:hover { border-color: rgba(13,148,136,0.15); transform: translateX(4px); }
+    .ps-ti-icon {
+        width: 44px; height: 44px; border-radius: 12px;
+        background: white; border: 1px solid var(--ps-border);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--ps-teal); font-size: 0.9rem; flex-shrink: 0;
+    }
+    .ps-ti-info { flex: 1; min-width: 0; }
+    .ps-ti-name {
+        font-size: 0.8rem; font-weight: 700; color: var(--ps-dark);
+        margin: 0; line-height: 1.35;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ps-ti-price {
+        font-size: 0.72rem; font-weight: 800; color: var(--ps-gold);
+        margin-top: 2px;
+    }
+
+    .ps-total-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding-top: 18px; margin-top: 18px;
+        border-top: 1px solid var(--ps-border);
+    }
+    .ps-total-label {
+        font-size: 0.72rem; font-weight: 800;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        color: #94a3b8;
+    }
+    .ps-total-value {
+        font-size: 1.35rem; font-weight: 900;
+        color: var(--ps-teal-dark); line-height: 1;
+    }
+    .ps-total-currency { font-size: 0.8rem; font-weight: 700; }
+
+    /* ═══════════════ TIMELINE CARD ═══════════════ */
+    .ps-timeline-card {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-sm);
+        padding: 32px; height: 100%;
+        position: relative; overflow: hidden;
+        transition: var(--ps-transition);
+    }
+    .ps-timeline-card:hover { box-shadow: var(--ps-shadow-md); }
+    .ps-timeline-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, var(--ps-teal), var(--ps-emerald), var(--ps-gold));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .ps-timeline-card:hover::before { opacity: 1; }
+
+    .ps-timeline-header {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        margin-bottom: 40px; flex-wrap: wrap; gap: 12px;
+    }
+    .ps-timeline-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.35rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0 0 4px;
+    }
+    .ps-timeline-id {
+        font-size: 0.78rem; color: #94a3b8; font-weight: 600;
+    }
+    .ps-timeline-id strong { color: var(--ps-dark); font-weight: 800; }
+
+    /* Status badge */
+    .ps-status-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.65rem; font-weight: 800;
+        padding: 7px 18px; border-radius: 50px;
+        letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .ps-status-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+    }
+    .ps-status-delivered {
+        background: rgba(5,150,105,0.08);
+        color: var(--ps-emerald);
+        border: 1px solid rgba(5,150,105,0.1);
+    }
+    .ps-status-delivered .ps-status-dot { background: var(--ps-emerald); }
+    .ps-status-active {
+        background: rgba(13,148,136,0.08);
+        color: var(--ps-teal);
+        border: 1px solid rgba(13,148,136,0.1);
+    }
+    .ps-status-active .ps-status-dot {
+        background: var(--ps-teal);
+        animation: psStatusPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes psStatusPulse {
+        0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+    }
+
+    /* Timeline */
+    .ps-timeline {
+        position: relative;
+        padding-left: 32px;
+    }
+    .ps-timeline::before {
+        content: ''; position: absolute;
+        left: 15px; top: 8px; bottom: 8px;
+        width: 2px; background: #e2e8f0;
+        border-radius: 2px;
+    }
+
+    .ps-tl-item {
+        position: relative;
+        padding-left: 48px;
+        padding-bottom: 36px;
+    }
+    .ps-tl-item:last-child { padding-bottom: 0; }
+
+    /* Timeline node */
+    .ps-tl-node {
+        position: absolute;
+        left: -1px; top: 2px;
+        width: 32px; height: 32px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.75rem;
+        z-index: 2;
+        transition: var(--ps-transition);
+    }
+    .ps-tl-node-inactive {
+        background: white;
+        border: 2px solid #e2e8f0;
+        color: #cbd5e1;
+    }
+    .ps-tl-node-active {
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        border: 2px solid transparent;
+        color: white;
+        box-shadow: 0 4px 16px rgba(13,148,136,0.3);
+    }
+
+    /* Active line segment */
+    .ps-tl-item.is-active::before {
+        content: ''; position: absolute;
+        left: 15px; top: 34px; bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, var(--ps-teal), #e2e8f0);
+        border-radius: 2px; z-index: 1;
+    }
+    .ps-tl-item:last-child.is-active::before { display: none; }
+
+    /* Timeline content */
+    .ps-tl-content {
+        background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+        padding: 20px; border: 1px solid var(--ps-border);
+        transition: var(--ps-transition);
+    }
+    .ps-tl-item.is-active .ps-tl-content {
+        background: rgba(13,148,136,0.03);
+        border-color: rgba(13,148,136,0.1);
+    }
+    .ps-tl-item:hover .ps-tl-content {
+        transform: translateX(4px);
+        box-shadow: var(--ps-shadow-sm);
+    }
+
+    .ps-tl-top {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: 12px; flex-wrap: wrap;
+    }
+    .ps-tl-label {
+        font-size: 0.88rem; font-weight: 800;
+        color: #94a3b8; margin: 0; line-height: 1.4;
+    }
+    .ps-tl-item.is-active .ps-tl-label { color: var(--ps-teal-dark); }
+
+    .ps-tl-check {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 0.68rem; font-weight: 800;
+        color: var(--ps-emerald);
+        padding: 3px 10px; border-radius: 50px;
+        background: rgba(5,150,105,0.08);
+        border: 1px solid rgba(5,150,105,0.06);
+        white-space: nowrap;
+    }
+
+    .ps-tl-time {
+        font-size: 0.72rem; color: #94a3b8;
+        font-weight: 600; margin-top: 8px;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .ps-tl-time i { font-size: 0.6rem; }
+    .ps-tl-item.is-active .ps-tl-time { color: var(--ps-teal); }
+
+    /* ═══════════════ ERROR STATE ═══════════════ */
+    .ps-error-card {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-sm);
+        padding: 80px 40px; text-align: center;
+        max-width: 500px; margin: 0 auto;
+    }
+    .ps-error-icon-wrap {
+        width: 110px; height: 110px; border-radius: 50%;
+        background: #fef2f2;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 28px; position: relative;
+    }
+    .ps-error-icon-wrap i { font-size: 2.5rem; color: #fca5a5; }
+    .ps-error-icon-wrap::after {
+        content: ''; position: absolute; inset: -8px;
+        border-radius: 50%; border: 2px dashed rgba(239,68,68,0.15);
+        animation: psEmptySpin 25s linear infinite;
+    }
+    @keyframes psEmptySpin { to { transform: rotate(360deg); } }
+    .ps-error-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem; font-weight: 700;
+        color: var(--ps-dark); margin-bottom: 10px;
+    }
+    .ps-error-desc {
+        font-size: 0.9rem; color: #94a3b8;
+        margin-bottom: 8px; line-height: 1.7;
+    }
+    .ps-error-id {
+        font-size: 0.88rem; font-weight: 800;
+        color: #ef4444; margin-bottom: 28px;
+        padding: 6px 16px; background: #fef2f2;
+        border-radius: 50px; display: inline-block;
+    }
+    .ps-error-btn {
+        display: inline-flex; align-items: center; gap: 10px;
+        height: 50px; padding: 0 32px;
+        border: none; border-radius: 60px;
+        background: var(--ps-dark); color: white;
+        font-size: 0.85rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        text-decoration: none; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-error-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-error-btn span, .ps-error-btn i { position: relative; z-index: 1; }
+    .ps-error-btn:hover::before { opacity: 1; }
+    .ps-error-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(13,148,136,0.3);
+        color: white;
+    }
+
+    /* ═══════════════ REVEAL ═══════════════ */
+    .ps-reveal {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-reveal.ps-visible { opacity: 1; transform: translateY(0); }
+    .ps-reveal-d1 { transition-delay: 0.1s; }
+    .ps-reveal-d2 { transition-delay: 0.2s; }
+    .ps-reveal-d3 { transition-delay: 0.3s; }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .ps-track-title { font-size: 1.7rem; }
+    }
+
+    @media (max-width: 767px) {
+        .ps-track-header { margin-bottom: 32px; }
+        .ps-track-title { font-size: 1.45rem; }
+        .ps-track-desc { font-size: 0.82rem; }
+        .ps-search-bar {
+            border-radius: var(--ps-radius-lg);
+            flex-wrap: wrap; padding: 8px;
+        }
+        .ps-search-icon-wrap { display: none; }
+        .ps-search-input { width: 100%; padding: 12px 8px; font-size: 0.88rem; }
+        .ps-search-btn { width: 100%; justify-content: center; height: 48px; }
+        .ps-info-card { padding: 22px; border-radius: var(--ps-radius-lg); }
+        .ps-timeline-card { padding: 24px; border-radius: var(--ps-radius-lg); }
+        .ps-timeline-header { margin-bottom: 28px; }
+        .ps-timeline-title { font-size: 1.15rem; }
+        .ps-tl-item { padding-left: 40px; padding-bottom: 28px; }
+        .ps-tl-node { width: 28px; height: 28px; font-size: 0.65rem; left: 0; }
+        .ps-timeline::before { left: 13px; }
+        .ps-tl-item.is-active::before { left: 13px; }
+        .ps-tl-content { padding: 16px; }
+        .ps-tl-label { font-size: 0.82rem; }
+        .ps-error-card { padding: 60px 24px; }
+        .ps-error-title { font-size: 1.3rem; }
+    }
+
+    @media (max-width: 400px) {
+        .ps-tl-top { flex-direction: column; }
+        .ps-tl-check { align-self: flex-start; }
+    }
+</style>
+
+<div class="container py-4 py-lg-5">
+    <div class="mx-auto" style="max-width: 1000px;">
+
+        <!-- Header -->
+        <div class="ps-track-header ps-reveal">
+            <div class="ps-header-tag">
+                <span class="ps-header-tag-dot"></span>
+                Logistics Tracking
+            </div>
+            <h1 class="ps-track-title">Where is your <span class="ps-gradient-text">package?</span></h1>
+            <p class="ps-track-desc">Enter your tracking number below to see the real-time movement of your Ponno Sebaa treasures.</p>
+        </div>
+
+        <!-- Search -->
+        <div class="ps-search-wrap ps-reveal ps-reveal-d1">
+            <form method="POST" class="ps-search-bar">
+                <div class="ps-search-icon-wrap">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <input type="text" name="order_id" class="ps-search-input"
+                       placeholder="Enter Order ID (e.g. PS98765432)" required
+                       value="{{ order.order_id if order else '' }}">
+                <button class="ps-search-btn" type="submit">
+                    <span>Track Shipment</span>
+                </button>
+            </form>
+        </div>
+
+        {% if order %}
+        <div class="row g-4 g-lg-5">
+            <!-- Left Column -->
+            <div class="col-lg-4">
+                <div class="ps-info-card ps-reveal ps-reveal-d1">
+                    <div class="ps-card-label">Destination</div>
+
+                    <div class="ps-dest-row">
+                        <div class="ps-dest-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <h6 class="ps-dest-city">{{ order.city }}</h6>
+                            <p class="ps-dest-sub">Delivery Destination</p>
+                        </div>
+                    </div>
+
+                    <div class="ps-address-box">
+                        <p class="ps-address-name">{{ order.name }}</p>
+                        <div class="ps-address-line">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>{{ order.phone }}</span>
+                        </div>
+                        <div class="ps-address-line">
+                            <i class="fa-solid fa-map-pin"></i>
+                            <span>{{ order.address }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ps-info-card ps-reveal ps-reveal-d2">
+                    <div class="ps-card-label">Contents</div>
+
+                    <div class="ps-items-scroll">
+                        {% for item in order.get('items_details', []) %}
+                        <div class="ps-track-item">
+                            <div class="ps-ti-icon">
+                                <i class="fa-solid fa-box"></i>
+                            </div>
+                            <div class="ps-ti-info">
+                                <p class="ps-ti-name" title="{{ item.title }}">{{ item.title }}</p>
+                                <div class="ps-ti-price">৳{{ item.price }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="ps-total-row">
+                        <span class="ps-total-label">Total Value</span>
+                        <span class="ps-total-value">
+                            <span class="ps-total-currency">৳</span>{{ order.total }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Timeline -->
+            <div class="col-lg-8">
+                <div class="ps-timeline-card ps-reveal ps-reveal-d2">
+                    <div class="ps-timeline-header">
+                        <div>
+                            <h4 class="ps-timeline-title">Journey Status</h4>
+                            <div class="ps-timeline-id">
+                                Tracking ID: <strong>{{ order.order_id }}</strong>
+                            </div>
+                        </div>
+                        <span class="ps-status-badge
+                            {% if order.status|lower == 'delivered' %}ps-status-delivered
+                            {% else %}ps-status-active{% endif %}">
+                            <span class="ps-status-dot"></span>
+                            {{ order.status|upper if order.status else 'PROCESSING' }}
+                        </span>
+                    </div>
+
+                    <div class="ps-timeline">
+                        {% set stages = [
+                            ('Pending', 'Order Confirmed', 'fa-receipt', 'Your order has been placed and confirmed successfully'),
+                            ('Shipped', 'Handed to Courier', 'fa-truck-moving', 'Package has been picked up by the courier partner'),
+                            ('In Region', 'Arrived at Sorting Facility', 'fa-warehouse', 'Your package reached the local sorting hub'),
+                            ('Delivered', 'Package Delivered', 'fa-house-circle-check', 'Package has been delivered to the destination')
+                        ] %}
+
+                        {% for key, label, icon, desc in stages %}
+                            {% set stage_info = namespace(active=false, time='In Transit...') %}
+
+                            {% if key == 'Pending' %}
+                                {% set stage_info.active = true %}
+                                {% set stage_info.time = order.created_at if order.created_at is string else order.created_at.strftime('%d %b, %Y • %I:%M %p') %}
+                            {% elif order.history %}
+                                {% for h in order.history %}
+                                    {% if h.status|lower|trim == key|lower|trim %}
+                                        {% set stage_info.active = true %}
+                                        {% set stage_info.time = h.time %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+
+                        <div class="ps-tl-item {% if stage_info.active %}is-active{% endif %}">
+                            <div class="ps-tl-node {% if stage_info.active %}ps-tl-node-active{% else %}ps-tl-node-inactive{% endif %}">
+                                <i class="fa-solid {{ icon }}"></i>
+                            </div>
+                            <div class="ps-tl-content">
+                                <div class="ps-tl-top">
+                                    <h6 class="ps-tl-label">{{ label }}</h6>
+                                    {% if stage_info.active %}
+                                    <span class="ps-tl-check">
+                                        <i class="fa-solid fa-circle-check"></i> Done
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <p style="font-size: 0.78rem; color: #94a3b8; margin: 6px 0 0; line-height: 1.5;">
+                                    {% if stage_info.active %}{{ desc }}{% else %}Awaiting this stage{% endif %}
+                                </p>
+                                {% if stage_info.active %}
+                                <div class="ps-tl-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    {{ stage_info.time }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% elif request.method == 'POST' %}
+        <!-- Error State -->
+        <div class="ps-error-card ps-reveal">
+            <div class="ps-error-icon-wrap">
+                <i class="fa-solid fa-ghost"></i>
+            </div>
+            <h3 class="ps-error-title">Parcel Not Found</h3>
+            <p class="ps-error-desc">The tracking ID below doesn't match any records in our system. Please verify and try again.</p>
+            <div class="ps-error-id">
+                <i class="fa-solid fa-xmark me-1"></i>{{ request.form.get('order_id') }}
+            </div>
+            <br>
+            <a href="/track" class="ps-error-btn">
+                <span>Verify & Retry</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('ps-visible'); });
+    }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+    document.querySelectorAll('.ps-reveal').forEach(el => revealObs.observe(el));
+
+    // Timeline animation on load
+    document.querySelectorAll('.ps-tl-item.is-active').forEach((item, i) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-16px)';
+        setTimeout(() => {
+            item.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+            item.style.opacity = '1';
+            item.style.transform = 'translateX(0)';
+        }, 400 + (i * 200));
+    });
+</script>
+{% endblock %}

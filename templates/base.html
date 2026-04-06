@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponno Sebaa | We introduce ourselves by our services</title>
+    
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/M56zFdSQ/Whats-App-Image-2026-04-05-at-11-35-17-PM-removebg-preview.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap');
+
+        :root {
+            --ps-teal: #0d9488;
+            --ps-teal-deep: #0f766e;
+            --ps-teal-dark: #134e4a;
+            --ps-emerald: #059669;
+            --ps-gold: #f59e0b;
+            --ps-gold-light: #fbbf24;
+            --ps-dark: #0c1220;
+            --ps-dark-card: #111827;
+            --ps-surface: #f8fafc;
+            --ps-surface-warm: #fefce8;
+            --ps-border: rgba(15, 23, 42, 0.06);
+            --ps-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+            --ps-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+            --ps-shadow-lg: 0 20px 50px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+            --ps-shadow-xl: 0 25px 60px rgba(13,148,136,0.12), 0 10px 25px rgba(0,0,0,0.06);
+            --ps-radius-sm: 10px;
+            --ps-radius-md: 16px;
+            --ps-radius-lg: 22px;
+            --ps-radius-xl: 28px;
+            --ps-transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            --ps-transition-fast: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+            --ps-transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        *, *::before, *::after { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+        body { 
+            font-family: 'Inter', sans-serif;
+            display: flex; flex-direction: column;
+            min-height: 100vh; overflow-x: hidden;
+            background-color: var(--ps-surface);
+            color: var(--ps-dark);
+        }
+
+        main { flex-grow: 1; }
+
+        /* ═══════════════ NAVBAR ═══════════════ */
+        .navbar {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 14px 0;
+            border-bottom: 1px solid var(--ps-border);
+            transition: var(--ps-transition);
+            position: relative;
+        }
+        .navbar::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, var(--ps-teal) 20%, var(--ps-gold) 50%, var(--ps-emerald) 80%, transparent 100%);
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+        .navbar.ps-scrolled {
+            padding: 8px 0;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.06);
+        }
+        .navbar.ps-scrolled::after { opacity: 1; }
+
+        .navbar-brand {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+        }
+        .navbar-brand img {
+            height: 44px; transition: var(--ps-transition);
+            filter: drop-shadow(0 2px 8px rgba(13,148,136,0.15));
+        }
+        .navbar-brand:hover img { transform: scale(1.06) rotate(-2deg); }
+        
+        .brand-text {
+            font-size: 1.3rem; font-weight: 800;
+            letter-spacing: -0.5px; line-height: 1;
+        }
+        .brand-accent { color: var(--ps-teal-dark); }
+        .brand-gold { color: var(--ps-gold); }
+
+        .nav-link { 
+            font-weight: 600; 
+            margin: 0 6px; 
+            font-size: 0.88rem; 
+            color: var(--ps-dark) !important;
+            transition: var(--ps-transition-fast);
+            position: relative; padding: 8px 14px !important;
+            border-radius: 10px;
+        }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 2px; border-radius: 10px;
+            background: linear-gradient(90deg, var(--ps-teal), var(--ps-gold));
+            transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .nav-link:hover { 
+            color: var(--ps-teal) !important; 
+            background: rgba(13,148,136,0.04);
+        }
+        .nav-link:hover::after { width: 60%; }
+        .nav-link.active { color: var(--ps-teal) !important; }
+        .nav-link.active::after { width: 60%; }
+
+        /* Hamburger */
+        .hamburger-btn {
+            width: 42px; height: 42px; border-radius: var(--ps-radius-sm);
+            border: 1px solid var(--ps-border) !important;
+            background: white !important; cursor: pointer;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 5px;
+            padding: 0 !important; box-shadow: none !important;
+            transition: var(--ps-transition-fast);
+        }
+        .hamburger-btn:hover { border-color: var(--ps-teal) !important; }
+        .hamburger-btn span {
+            display: block; height: 2px; border-radius: 10px;
+            background: var(--ps-teal-dark);
+            transition: var(--ps-transition);
+            transform-origin: center;
+        }
+        .hamburger-btn span:nth-child(1) { width: 20px; }
+        .hamburger-btn span:nth-child(2) { width: 14px; }
+        .hamburger-btn span:nth-child(3) { width: 20px; }
+        .hamburger-btn:hover span { width: 20px; }
+
+        /* Cart Button */
+        .cart-btn { 
+            width: 46px; height: 46px; 
+            display: flex; align-items: center; justify-content: center; 
+            border-radius: var(--ps-radius-sm); 
+            background: var(--ps-dark);
+            color: white !important;
+            text-decoration: none; 
+            transition: var(--ps-transition);
+            position: relative; overflow: hidden;
+            border: 1px solid transparent;
+        }
+        .cart-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .cart-btn:hover::before { opacity: 1; }
+        .cart-btn i { position: relative; z-index: 1; font-size: 1rem; }
+        .cart-btn:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(13,148,136,0.3);
+            border-color: transparent;
+        }
+        .cart-btn .cart-badge { 
+            position: absolute; top: -3px; right: -3px; z-index: 2;
+            border: 2px solid white; 
+            font-size: 0.6rem; font-weight: 800;
+            min-width: 20px; height: 20px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 2px 8px rgba(239,68,68,0.35);
+            transition: var(--ps-transition-bounce);
+        }
+        .cart-btn:hover .cart-badge { transform: scale(1.15); }
+
+        /* ═══════════════ OFFCANVAS SIDEBAR ═══════════════ */
+        .offcanvas {
+            width: 300px !important;
+            background: linear-gradient(180deg, var(--ps-teal-dark) 0%, #0a3d3d 100%);
+            border: none !important;
+        }
+        .offcanvas.offcanvas-start { border-right: none !important; }
+        .offcanvas-header {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .offcanvas-title { 
+            color: white !important; font-weight: 800; font-size: 1.1rem;
+            letter-spacing: -0.3px;
+        }
+        .offcanvas-title .ps-off-gold { color: var(--ps-gold-light); }
+        .btn-close-white { opacity: 0.5 !important; transition: 0.2s; }
+        .btn-close-white:hover { opacity: 1 !important; transform: rotate(90deg); }
+
+        .mobile-nav .nav-link { 
+            padding: 16px 28px !important;
+            color: rgba(255,255,255,0.7) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-weight: 600; font-size: 0.92rem;
+            transition: var(--ps-transition-fast);
+            display: flex; align-items: center; gap: 14px;
+            margin: 0 !important; border-radius: 0 !important;
+        }
+        .mobile-nav .nav-link i {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: rgba(255,255,255,0.06);
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; transition: var(--ps-transition);
+        }
+        .mobile-nav .nav-link:hover { 
+            background: rgba(255,255,255,0.06); 
+            color: white !important;
+            padding-left: 36px !important;
+        }
+        .mobile-nav .nav-link:hover i {
+            background: var(--ps-gold); color: var(--ps-dark);
+        }
+
+        .ps-off-social {
+            padding: 28px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            margin-top: 20px;
+        }
+        .ps-off-social-label {
+            font-size: 0.6rem; font-weight: 800; letter-spacing: 0.2em;
+            text-transform: uppercase; color: rgba(255,255,255,0.3);
+            margin-bottom: 16px;
+        }
+        .ps-off-social-link {
+            width: 38px; height: 38px; border-radius: 10px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6);
+            text-decoration: none; transition: var(--ps-transition);
+            margin-right: 8px; font-size: 0.85rem;
+        }
+        .ps-off-social-link:hover {
+            background: var(--ps-gold); color: var(--ps-dark);
+            transform: translateY(-3px);
+        }
+
+        /* ═══════════════ WHATSAPP FLOAT ═══════════════ */
+        .whatsapp-float { 
+            position: fixed; bottom: 28px; right: 28px; 
+            width: 60px; height: 60px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 28px; z-index: 9999; 
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white; text-decoration: none;
+            box-shadow: 0 8px 28px rgba(37, 211, 102, 0.35);
+            transition: var(--ps-transition);
+        }
+        .whatsapp-float::before {
+            content: ''; position: absolute; inset: -4px;
+            border-radius: 50%; border: 2px solid rgba(37,211,102,0.3);
+            animation: psWaPulse 2s ease-out infinite;
+        }
+        @keyframes psWaPulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .whatsapp-float:hover { 
+            transform: translateY(-5px) scale(1.1); 
+            color: white;
+            box-shadow: 0 14px 36px rgba(37, 211, 102, 0.45);
+        }
+
+        /* ═══════════════ FLASH ALERTS ═══════════════ */
+        .ps-alert-wrap {
+            background: white;
+            border-radius: var(--ps-radius-md);
+            border: 1px solid var(--ps-border);
+            box-shadow: var(--ps-shadow-md);
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            position: relative; overflow: hidden;
+            animation: psAlertIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes psAlertIn {
+            from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .ps-alert-wrap::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            background: linear-gradient(180deg, var(--ps-teal), var(--ps-emerald));
+            border-radius: 0 4px 4px 0;
+        }
+        .ps-alert-wrap.ps-alert-success::before { background: linear-gradient(180deg, var(--ps-teal), var(--ps-emerald)); }
+        .ps-alert-wrap.ps-alert-error::before { background: linear-gradient(180deg, #ef4444, #dc2626); }
+        .ps-alert-wrap.ps-alert-warning::before { background: linear-gradient(180deg, var(--ps-gold), #f97316); }
+        
+        .ps-alert-icon {
+            width: 40px; height: 40px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-size: 1rem;
+        }
+        .ps-alert-success .ps-alert-icon { background: rgba(13,148,136,0.1); color: var(--ps-teal); }
+        .ps-alert-error .ps-alert-icon { background: rgba(239,68,68,0.1); color: #ef4444; }
+        .ps-alert-warning .ps-alert-icon { background: rgba(245,158,11,0.1); color: var(--ps-gold); }
+        
+        .ps-alert-text { font-weight: 600; font-size: 0.9rem; color: var(--ps-dark); line-height: 1.5; }
+        
+        .ps-alert-close {
+            width: 32px; height: 32px; border-radius: 8px; border: none;
+            background: transparent; color: #94a3b8;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: var(--ps-transition-fast);
+            flex-shrink: 0;
+        }
+        .ps-alert-close:hover { background: var(--ps-surface); color: var(--ps-dark); }
+
+        /* ═══════════════ FOOTER ═══════════════ */
+        .footer-section { 
+            background: var(--ps-dark); 
+            color: white;
+            padding: 80px 0 0; 
+            margin-top: 80px; 
+            position: relative; overflow: hidden;
+        }
+        .footer-section::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--ps-teal) 30%, var(--ps-gold) 50%, var(--ps-emerald) 70%, transparent 100%);
+            opacity: 0.4;
+        }
+        .footer-glow {
+            position: absolute; width: 500px; height: 500px; border-radius: 50%;
+            filter: blur(150px); opacity: 0.04; pointer-events: none;
+        }
+        .footer-glow-1 { top: -200px; left: -100px; background: var(--ps-teal); }
+        .footer-glow-2 { bottom: -200px; right: -100px; background: var(--ps-gold); }
+
+        .footer-brand-row {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 20px;
+        }
+        .footer-brand-row img {
+            height: 40px; filter: brightness(0) invert(1) opacity(0.9);
+        }
+        .footer-brand-name {
+            font-size: 1.3rem; font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .footer-brand-name .fb-accent { color: var(--ps-gold-light); }
+
+        .footer-desc {
+            font-size: 0.88rem; color: rgba(255,255,255,0.45);
+            line-height: 1.8; max-width: 400px;
+        }
+
+        .footer-title { 
+            font-weight: 800; margin-bottom: 24px;
+            color: white; text-transform: uppercase; 
+            font-size: 0.68rem; letter-spacing: 0.18em;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .footer-title::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+        }
+        .footer-link { 
+            color: rgba(255,255,255,0.45); text-decoration: none; 
+            transition: var(--ps-transition-fast); 
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 14px; font-size: 0.88rem; font-weight: 500;
+        }
+        .footer-link::before {
+            content: ''; width: 0; height: 2px; border-radius: 2px;
+            background: var(--ps-gold); transition: width 0.3s ease;
+        }
+        .footer-link:hover { 
+            color: white; 
+            padding-left: 4px;
+        }
+        .footer-link:hover::before { width: 12px; }
+
+        .footer-location {
+            display: flex; align-items: flex-start; gap: 12px;
+            color: rgba(255,255,255,0.45); font-size: 0.88rem;
+            margin-bottom: 20px; line-height: 1.6;
+        }
+        .footer-location i {
+            color: var(--ps-gold); margin-top: 3px; flex-shrink: 0;
+        }
+
+        .social-btn {
+            width: 42px; height: 42px; border-radius: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.5);
+            text-decoration: none; transition: var(--ps-transition);
+            margin-right: 8px; font-size: 0.9rem;
+        }
+        .social-btn:hover {
+            background: var(--ps-gold); color: var(--ps-dark);
+            border-color: var(--ps-gold);
+            transform: translateY(-4px) rotate(-5deg);
+            box-shadow: 0 8px 20px rgba(245,158,11,0.25);
+        }
+
+        .footer-bottom {
+            margin-top: 60px; padding: 24px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+        .footer-bottom p {
+            font-size: 0.8rem; color: rgba(255,255,255,0.3);
+            margin: 0;
+        }
+        .footer-bottom a {
+            color: rgba(255,255,255,0.5); text-decoration: none;
+            font-weight: 700; transition: var(--ps-transition-fast);
+        }
+        .footer-bottom a:hover { color: var(--ps-gold-light); }
+
+        /* ═══════════════ RESPONSIVE ═══════════════ */
+        @media (max-width: 991px) {
+            .navbar { padding: 10px 0; }
+            .navbar-brand img { height: 38px; }
+            .brand-text { font-size: 1.15rem; }
+            .cart-btn { width: 42px; height: 42px; }
+            .footer-section { margin-top: 60px; padding-top: 60px; }
+        }
+
+        @media (max-width: 767px) {
+            .navbar { padding: 8px 0; }
+            .navbar-brand img { height: 34px; }
+            .brand-text { font-size: 1.05rem; }
+            .cart-btn { width: 40px; height: 40px; }
+            .cart-btn i { font-size: 0.9rem; }
+            .whatsapp-float { width: 54px; height: 54px; font-size: 24px; bottom: 20px; right: 20px; }
+            .footer-section { margin-top: 40px; padding-top: 48px; }
+            .footer-desc { font-size: 0.82rem; }
+            .footer-link { font-size: 0.82rem; }
+            .footer-bottom { margin-top: 40px; }
+        }
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/' + current_theme + '.css') }}">
+</head>
+<body>
+
+    <a href="https://wa.me/+8801400461284" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+        <div class="container">
+            <button class="hamburger-btn navbar-toggler border-0 shadow-none me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-label="Open menu">
+                <span></span><span></span><span></span>
+            </button>
+
+            <a class="navbar-brand" href="/">
+                <img src="https://i.ibb.co.com/d0kk4gqV/Screenshot-2026-04-06-010615-removebg-preview.png" alt="Ponno Sebaa Logo">
+                <span class="brand-text">
+                    <span class="brand-accent">Ponno </span><span class="brand-gold">Sebaa</span>
+                </span>
+            </a>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/track">Track Order</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my-orders">My Orders</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Support</a></li>
+                </ul>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <a href="/cart" class="cart-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="cart-badge rounded-pill">
+                        {{ session['cart']|length if session['cart'] else 0 }}
+                    </span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">
+                <span class="ps-off-gold">Ponno</span> Sebaa
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="mobile-nav pt-2">
+                <a class="nav-link" href="/"><i class="fa-solid fa-house"></i> Home</a>
+                <a class="nav-link" href="/track"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+                <a class="nav-link" href="/my-orders"><i class="fa-solid fa-clock-rotate-left"></i> My Orders</a>
+                <a class="nav-link" href="/cart"><i class="fa-solid fa-bag-shopping"></i> My Cart</a>
+                <a class="nav-link" href="/contact"><i class="fa-solid fa-headset"></i> Support</a>
+            </div>
+            
+            <div class="ps-off-social">
+                <p class="ps-off-social-label">Connect with us</p>
+                <div class="d-flex flex-wrap">
+                    <a href="https://www.facebook.com/share/1CacPZ3z2G/" class="ps-off-social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://wa.me/+8801400461284" class="ps-off-social-link" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://www.tiktok.com/@PonnoSebaabd1?_r=1&_t=ZS-956vqeRO3RC" class="ps-off-social-link" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.instagram.com/PonnoSebaabd?igsh=ZHczZG9oXIw" class="ps-off-social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="ps-alert-wrap ps-alert-{{ 'success' if category == 'success' else 'error' if category == 'error' else 'warning' }}" role="alert">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="ps-alert-icon">
+                                {% if category == 'success' %}
+                                    <i class="fa-solid fa-circle-check"></i>
+                                {% elif category == 'error' %}
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                {% endif %}
+                            </div>
+                            <span class="ps-alert-text flex-grow-1">{{ message }}</span>
+                            <button class="ps-alert-close" data-bs-dismiss="alert" aria-label="Close">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer-section">
+        <div class="footer-glow footer-glow-1"></div>
+        <div class="footer-glow footer-glow-2"></div>
+        <div class="container position-relative">
+            <div class="row g-4 g-lg-5">
+                <div class="col-lg-5">
+                    <div class="footer-brand-row">
+                        <img src="https://i.ibb.co.com/d0kk4gqV/Screenshot-2026-04-06-010615-removebg-preview.png" alt="Ponno Sebaa">
+                        <span class="footer-brand-name"><span class="fb-accent">Ponno</span> Sebaa</span>
+                    </div>
+                    <p class="footer-desc">Bangladesh's growing destination for premium products. We introduce ourselves by our services — quality and trust above all else.</p>
+                    <div class="d-flex flex-wrap mt-4">
+                        <a href="https://www.facebook.com/share/1CacPZ3z2G/" class="social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://wa.me/+8801400461284" class="social-btn" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://www.tiktok.com/@PonnoSebaabd1?_r=1&_t=ZS-956vqeRO3RC" class="social-btn" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://www.instagram.com/PonnoSebaabd?igsh=ZHczZG9oXIw" class="social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <h6 class="footer-title">Quick Links</h6>
+                    <a href="/about" class="footer-link">About Us</a>
+                    <a href="/track" class="footer-link">Track Delivery</a>
+                    <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
+                    <a href="/contact" class="footer-link">Contact Support</a>
+                    <a href="/all-products" class="footer-link">All Products</a>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <h6 class="footer-title">Get in Touch</h6>
+                    <div class="footer-location">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Bogura, Bangladesh</span>
+                    </div>
+                    <a href="https://wa.me/+8801400461284" class="footer-link" style="margin-bottom:10px;">
+                        <i class="fa-brands fa-whatsapp" style="color: #25d366; font-size: 1rem;"></i>
+                        +880 1400 461284
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 <strong>Ponno Sebaa</strong> &middot; Crafted by <a href="https://pagetostore.onrender.com/">PageToStore</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('mainNav');
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            if (scrollY > 30) {
+                navbar.classList.add('ps-scrolled');
+            } else {
+                navbar.classList.remove('ps-scrolled');
+            }
+            lastScroll = scrollY;
+        }, { passive: true });
+
+        // Active nav link highlight
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+
+        // Auto-dismiss alerts
+        document.querySelectorAll('.ps-alert-wrap').forEach(alert => {
+            setTimeout(() => {
+                const closeBtn = alert.querySelector('.ps-alert-close');
+                if (closeBtn && alert.closest('body')) {
+                    closeBtn.click();
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

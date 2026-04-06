@@ -1,0 +1,651 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap');
+
+    :root {
+        --ps-teal: #0d9488;
+        --ps-teal-deep: #0f766e;
+        --ps-teal-dark: #134e4a;
+        --ps-emerald: #059669;
+        --ps-gold: #f59e0b;
+        --ps-gold-light: #fbbf24;
+        --ps-dark: #0c1220;
+        --ps-surface: #f8fafc;
+        --ps-surface-warm: #fefce8;
+        --ps-border: rgba(15, 23, 42, 0.06);
+        --ps-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+        --ps-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+        --ps-shadow-lg: 0 20px 50px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+        --ps-shadow-xl: 0 25px 60px rgba(13,148,136,0.12), 0 10px 25px rgba(0,0,0,0.06);
+        --ps-radius-sm: 10px;
+        --ps-radius-md: 16px;
+        --ps-radius-lg: 22px;
+        --ps-radius-xl: 28px;
+        --ps-transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-fast: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ═══════════════ PAGE HEADER ═══════════════ */
+    .ps-cart-header {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        margin-bottom: 36px; flex-wrap: wrap; gap: 16px;
+    }
+    .ps-header-tag {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.62rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ps-gold); padding: 6px 16px;
+        background: var(--ps-surface-warm);
+        border-radius: 50px; border: 1px solid rgba(245,158,11,0.12);
+        margin-bottom: 10px;
+    }
+    .ps-header-tag-dot {
+        width: 5px; height: 5px; border-radius: 50%;
+        background: var(--ps-gold);
+    }
+    .ps-cart-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0; line-height: 1.2;
+    }
+    .ps-gradient-text {
+        background: linear-gradient(135deg, var(--ps-teal) 0%, var(--ps-emerald) 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .ps-cart-desc {
+        font-size: 0.88rem; color: #94a3b8; margin: 6px 0 0;
+    }
+
+    .ps-item-count-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 22px; border-radius: 60px;
+        background: white; border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-sm);
+        font-size: 0.82rem; font-weight: 700; color: var(--ps-dark);
+        white-space: nowrap;
+    }
+    .ps-item-count-badge i {
+        width: 26px; height: 26px; border-radius: 8px;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        display: inline-flex; align-items: center; justify-content: center;
+        color: white; font-size: 0.7rem;
+    }
+
+    /* ═══════════════ CART ITEMS ═══════════════ */
+    .ps-cart-item {
+        background: white;
+        border-radius: var(--ps-radius-lg);
+        border: 1px solid var(--ps-border);
+        overflow: hidden; position: relative;
+        transition: var(--ps-transition);
+        box-shadow: var(--ps-shadow-sm);
+        margin-bottom: 16px;
+    }
+    .ps-cart-item::before {
+        content: ''; position: absolute; inset: -1px;
+        border-radius: var(--ps-radius-lg);
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        z-index: -1; opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .ps-cart-item:hover::before { opacity: 0.5; }
+    .ps-cart-item:hover {
+        box-shadow: var(--ps-shadow-md);
+        border-color: transparent;
+    }
+    .ps-cart-item-inner {
+        padding: 20px; display: flex; gap: 20px; align-items: center;
+    }
+
+    /* Image */
+    .ps-item-img-wrap {
+        width: 110px; height: 110px; flex-shrink: 0;
+        border-radius: var(--ps-radius-md);
+        overflow: hidden; position: relative;
+        background: var(--ps-surface);
+    }
+    .ps-item-img-wrap img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-cart-item:hover .ps-item-img-wrap img { transform: scale(1.08); }
+
+    /* Info */
+    .ps-item-info { flex: 1; min-width: 0; }
+    .ps-item-name {
+        font-size: 0.95rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0 0 8px; line-height: 1.4;
+        display: -webkit-box; -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .ps-item-name a { color: inherit; text-decoration: none; transition: var(--ps-transition-fast); }
+    .ps-item-name a:hover { color: var(--ps-teal); }
+
+    .ps-variant-pill {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 0.68rem; font-weight: 700;
+        color: var(--ps-teal-dark);
+        background: rgba(13,148,136,0.06);
+        border: 1px solid rgba(13,148,136,0.08);
+        padding: 4px 12px; border-radius: 50px;
+        margin-bottom: 12px;
+    }
+    .ps-variant-pill i { font-size: 0.55rem; color: var(--ps-teal); }
+
+    /* Variant Select */
+    .ps-variant-select-wrap {
+        position: relative; display: inline-block;
+    }
+    .ps-variant-select {
+        appearance: none; -webkit-appearance: none;
+        font-size: 0.7rem; font-weight: 600; color: #64748b;
+        background: var(--ps-surface); border: 1px solid var(--ps-border);
+        border-radius: 50px; padding: 6px 32px 6px 14px;
+        cursor: pointer; transition: var(--ps-transition-fast);
+        width: auto; max-width: 200px;
+    }
+    .ps-variant-select:hover { border-color: var(--ps-teal); }
+    .ps-variant-select:focus { outline: none; border-color: var(--ps-teal); box-shadow: 0 0 0 3px rgba(13,148,136,0.1); }
+    .ps-variant-select-arrow {
+        position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+        pointer-events: none; font-size: 0.55rem; color: #94a3b8;
+    }
+
+    /* Quantity */
+    .ps-qty-wrapper {
+        display: inline-flex; align-items: center;
+        background: var(--ps-surface);
+        border-radius: 50px; padding: 4px;
+        border: 1px solid var(--ps-border);
+    }
+    .ps-qty-btn {
+        width: 34px; height: 34px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: white; color: var(--ps-teal-dark);
+        text-decoration: none; font-size: 0.7rem; font-weight: 700;
+        transition: var(--ps-transition);
+        box-shadow: var(--ps-shadow-sm);
+        border: 1px solid transparent;
+    }
+    .ps-qty-btn:hover {
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        color: white; border-color: transparent;
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(13,148,136,0.25);
+    }
+    .ps-qty-value {
+        width: 40px; text-align: center;
+        font-size: 0.9rem; font-weight: 800;
+        color: var(--ps-dark);
+    }
+
+    /* Price & Remove */
+    .ps-item-right {
+        display: flex; flex-direction: column; align-items: flex-end;
+        gap: 8px; flex-shrink: 0; min-width: 100px;
+    }
+    .ps-item-sub-label {
+        font-size: 0.62rem; font-weight: 700;
+        color: #94a3b8; text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+    .ps-item-subtotal {
+        font-size: 1.25rem; font-weight: 900;
+        color: var(--ps-teal-dark); line-height: 1;
+    }
+    .ps-remove-btn {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 0.72rem; font-weight: 700; color: #94a3b8;
+        text-decoration: none; padding: 4px 10px;
+        border-radius: 50px; transition: var(--ps-transition-fast);
+    }
+    .ps-remove-btn:hover {
+        color: #ef4444; background: #fef2f2;
+    }
+
+    /* ═══════════════ SUMMARY ═══════════════ */
+    .ps-summary-card {
+        background: white;
+        border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        overflow: hidden;
+        box-shadow: var(--ps-shadow-md);
+        position: sticky; top: 100px;
+    }
+    .ps-summary-header {
+        padding: 24px 28px 0;
+    }
+    .ps-summary-title {
+        font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ps-dark); margin: 0;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .ps-summary-title::after {
+        content: ''; flex: 1; height: 1px;
+        background: var(--ps-border);
+    }
+
+    .ps-summary-body { padding: 24px 28px; }
+
+    .ps-sum-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 12px 0;
+    }
+    .ps-sum-row + .ps-sum-row { border-top: 1px solid var(--ps-border); }
+    .ps-sum-label {
+        font-size: 0.85rem; color: #64748b; font-weight: 500;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .ps-sum-value {
+        font-size: 0.88rem; font-weight: 700; color: var(--ps-dark);
+    }
+    .ps-sum-free {
+        font-size: 0.72rem; font-weight: 800;
+        color: var(--ps-emerald);
+        background: rgba(5,150,105,0.08);
+        padding: 3px 10px; border-radius: 50px;
+        border: 1px solid rgba(5,150,105,0.08);
+    }
+
+    .ps-sum-total-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 20px 0 24px;
+        border-top: 2px solid var(--ps-border);
+        margin-top: 4px;
+    }
+    .ps-sum-total-label {
+        font-size: 0.95rem; font-weight: 800; color: var(--ps-dark);
+    }
+    .ps-sum-total-value {
+        font-size: 1.5rem; font-weight: 900;
+        color: var(--ps-teal-dark); line-height: 1;
+    }
+    .ps-sum-currency {
+        font-size: 0.9rem; font-weight: 700;
+    }
+
+    .ps-btn-checkout {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 56px;
+        border: none; border-radius: var(--ps-radius-md);
+        background: var(--ps-dark); color: white;
+        font-size: 0.9rem; font-weight: 800;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        text-decoration: none; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-btn-checkout::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-btn-checkout span, .ps-btn-checkout i { position: relative; z-index: 1; }
+    .ps-btn-checkout:hover::before { opacity: 1; }
+    .ps-btn-checkout:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(13,148,136,0.3);
+        color: white;
+    }
+    .ps-checkout-icon {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.75rem;
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-btn-checkout:hover .ps-checkout-icon { transform: translateX(4px); }
+
+    .ps-trust-row {
+        display: flex; justify-content: center; gap: 16px;
+        padding: 20px 28px; border-top: 1px solid var(--ps-border);
+        flex-wrap: wrap;
+    }
+    .ps-trust-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 0.62rem; font-weight: 700;
+        color: #94a3b8;
+    }
+    .ps-trust-chip i {
+        font-size: 0.65rem; color: var(--ps-teal);
+    }
+
+    /* ═══════════════ BACK LINK ═══════════════ */
+    .ps-back-link {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.85rem; font-weight: 700;
+        color: #94a3b8; text-decoration: none;
+        padding: 10px 0; transition: var(--ps-transition-fast);
+    }
+    .ps-back-link i {
+        transition: var(--ps-transition);
+    }
+    .ps-back-link:hover { color: var(--ps-teal); }
+    .ps-back-link:hover i { transform: translateX(-4px); }
+
+    /* ═══════════════ EMPTY CART ═══════════════ */
+    .ps-empty-card {
+        background: white;
+        border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-sm);
+        padding: 80px 40px; text-align: center;
+        max-width: 500px; margin: 60px auto;
+    }
+    .ps-empty-icon-wrap {
+        width: 100px; height: 100px; border-radius: 50%;
+        background: var(--ps-surface);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 28px; position: relative;
+    }
+    .ps-empty-icon-wrap i {
+        font-size: 2.2rem; color: #cbd5e1;
+    }
+    .ps-empty-icon-wrap::after {
+        content: ''; position: absolute; inset: -6px;
+        border-radius: 50%; border: 2px dashed var(--ps-border);
+        animation: psEmptySpin 20s linear infinite;
+    }
+    @keyframes psEmptySpin { to { transform: rotate(360deg); } }
+
+    .ps-empty-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem; font-weight: 700;
+        color: var(--ps-dark); margin-bottom: 10px;
+    }
+    .ps-empty-desc {
+        font-size: 0.9rem; color: #94a3b8;
+        margin-bottom: 32px; line-height: 1.6;
+    }
+    .ps-empty-btn {
+        display: inline-flex; align-items: center; gap: 10px;
+        height: 52px; padding: 0 36px;
+        border: none; border-radius: 60px;
+        background: var(--ps-dark); color: white;
+        font-size: 0.88rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        text-decoration: none; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-empty-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-empty-btn span, .ps-empty-btn i { position: relative; z-index: 1; }
+    .ps-empty-btn:hover::before { opacity: 1; }
+    .ps-empty-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(13,148,136,0.3);
+        color: white;
+    }
+
+    /* ═══════════════ REVEAL ANIMATIONS ═══════════════ */
+    .ps-reveal {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-reveal.ps-visible { opacity: 1; transform: translateY(0); }
+
+    .ps-stagger {
+        opacity: 0; transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-stagger.ps-visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .ps-cart-title { font-size: 1.6rem; }
+        .ps-summary-card { position: static; margin-top: 8px; }
+    }
+
+    @media (max-width: 767px) {
+        .ps-cart-header { margin-bottom: 24px; }
+        .ps-cart-title { font-size: 1.35rem; }
+        .ps-cart-desc { font-size: 0.8rem; }
+        .ps-item-count-badge { padding: 8px 16px; font-size: 0.75rem; }
+
+        .ps-cart-item-inner {
+            flex-wrap: wrap; padding: 16px; gap: 14px;
+        }
+        .ps-item-img-wrap { width: 80px; height: 80px; border-radius: var(--ps-radius-sm); }
+        .ps-item-info { flex: 1 1 calc(100% - 94px); min-width: 0; }
+        .ps-item-name { font-size: 0.85rem; margin-bottom: 6px; }
+
+        .ps-item-actions {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding-top: 14px;
+            border-top: 1px solid var(--ps-border);
+        }
+        .ps-item-right {
+            flex-direction: row; align-items: center;
+            gap: 16px; min-width: auto;
+        }
+        .ps-item-sub-label { display: none; }
+        .ps-item-subtotal { font-size: 1.05rem; }
+
+        .ps-summary-body { padding: 20px; }
+        .ps-summary-header { padding: 20px 20px 0; }
+        .ps-trust-row { padding: 16px 20px; gap: 12px; }
+        .ps-btn-checkout { height: 52px; font-size: 0.85rem; }
+        .ps-sum-total-value { font-size: 1.3rem; }
+
+        .ps-empty-card { padding: 60px 24px; margin: 40px auto; }
+        .ps-empty-title { font-size: 1.3rem; }
+    }
+
+    @media (max-width: 400px) {
+        .ps-qty-btn { width: 30px; height: 30px; font-size: 0.65rem; }
+        .ps-qty-value { width: 34px; font-size: 0.82rem; }
+    }
+</style>
+
+<div class="container py-4 py-lg-5">
+
+    <!-- Header -->
+    <div class="ps-cart-header ps-reveal">
+        <div>
+            <div class="ps-header-tag">
+                <span class="ps-header-tag-dot"></span>
+                Review
+            </div>
+            <h1 class="ps-cart-title">Your <span class="ps-gradient-text">Shopping Cart</span></h1>
+            <p class="ps-cart-desc">Review your selections before proceeding</p>
+        </div>
+        <div class="ps-item-count-badge">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span>{{ items|length }} Item{% if items|length != 1 %}s{% endif %}</span>
+        </div>
+    </div>
+
+    {% if items %}
+    <div class="row g-4 g-lg-5">
+        <!-- Cart Items -->
+        <div class="col-lg-8">
+            {% for item in items %}
+            <div class="ps-cart-item ps-stagger" style="--d: {{ loop.index0 }};">
+                <div class="ps-cart-item-inner">
+                    <!-- Image -->
+                    <a href="/product/{{ item.product_id or '' }}" class="ps-item-img-wrap">
+                        <img src="{{ item.main_image }}" 
+                             alt="{{ item.title }}"
+                             loading="lazy"
+                             onerror="this.onerror=null;this.src='https://placehold.co/400x400/f1f5f9/94a3b8?text=Product';">
+                    </a>
+
+                    <!-- Info -->
+                    <div class="ps-item-info">
+                        <h6 class="ps-item-name">
+                            <a href="/product/{{ item.product_id or '' }}">{{ item.title }}</a>
+                        </h6>
+
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="ps-variant-pill">
+                                <i class="fa-solid fa-sliders"></i>
+                                {{ item.variant or 'Standard' }}
+                            </span>
+
+                            {% if item.all_variants %}
+                            <form action="/update_variant/{{ loop.index0 }}" method="POST" class="ps-variant-select-wrap">
+                                <select name="new_variant" onchange="this.form.submit()" class="ps-variant-select">
+                                    {% for v in item.all_variants %}
+                                    <option value="{{ v.name }}" {% if v.name == item.variant %}selected{% endif %}>
+                                        {{ v.name }} · ৳{{ v.price }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <i class="fa-solid fa-chevron-down ps-variant-select-arrow"></i>
+                            </form>
+                            {% endif %}
+                        </div>
+
+                        <!-- Mobile actions row -->
+                        <div class="ps-item-actions d-md-none">
+                            <div class="ps-qty-wrapper">
+                                <a href="/update_cart/{{ loop.index0 }}/minus" class="ps-qty-btn text-decoration-none">
+                                    <i class="fa-solid fa-minus"></i>
+                                </a>
+                                <span class="ps-qty-value">{{ item.quantity }}</span>
+                                <a href="/update_cart/{{ loop.index0 }}/plus" class="ps-qty-btn text-decoration-none">
+                                    <i class="fa-solid fa-plus"></i>
+                                </a>
+                            </div>
+                            <div class="ps-item-right">
+                                <span class="ps-item-subtotal">৳{{ item.subtotal }}</span>
+                                <a href="/remove_from_cart/{{ loop.index0 }}" class="ps-remove-btn" onclick="return confirm('Remove this item?')">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Desktop: Qty + Price + Remove -->
+                    <div class="d-none d-md-flex align-items-center gap-4">
+                        <div class="ps-qty-wrapper">
+                            <a href="/update_cart/{{ loop.index0 }}/minus" class="ps-qty-btn text-decoration-none">
+                                <i class="fa-solid fa-minus"></i>
+                            </a>
+                            <span class="ps-qty-value">{{ item.quantity }}</span>
+                            <a href="/update_cart/{{ loop.index0 }}/plus" class="ps-qty-btn text-decoration-none">
+                                <i class="fa-solid fa-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="ps-item-right d-none d-md-flex">
+                        <span class="ps-item-sub-label">Subtotal</span>
+                        <span class="ps-item-subtotal">৳{{ item.subtotal }}</span>
+                        <a href="/remove_from_cart/{{ loop.index0 }}" class="ps-remove-btn" onclick="return confirm('Remove this item from your cart?')">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>Remove</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="ps-reveal">
+                <a href="/" class="ps-back-link">
+                    <i class="fa-solid fa-arrow-left-long"></i>
+                    <span>Keep Browsing Products</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="col-lg-4">
+            <div class="ps-summary-card ps-reveal">
+                <div class="ps-summary-header">
+                    <h6 class="ps-summary-title">Order Summary</h6>
+                </div>
+                <div class="ps-summary-body">
+                    <div class="ps-sum-row">
+                        <span class="ps-sum-label">
+                            <i class="fa-solid fa-bag-shopping" style="font-size:0.75rem; color: var(--ps-teal);"></i>
+                            Subtotal ({{ items|length }} item{% if items|length != 1 %}s{% endif %})
+                        </span>
+                        <span class="ps-sum-value">৳{{ total }}</span>
+                    </div>
+                    <div class="ps-sum-row">
+                        <span class="ps-sum-label">
+                            <i class="fa-solid fa-truck" style="font-size:0.75rem; color: var(--ps-teal);"></i>
+                            Shipping
+                        </span>
+                        <span class="ps-sum-free">Calculated Next</span>
+                    </div>
+
+                    <div class="ps-sum-total-row">
+                        <span class="ps-sum-total-label">Total</span>
+                        <span class="ps-sum-total-value">
+                            <span class="ps-sum-currency">৳</span>{{ total }}
+                        </span>
+                    </div>
+
+                    <a href="/checkout" class="ps-btn-checkout">
+                        <span>Checkout Now</span>
+                        <span class="ps-checkout-icon"><i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+                </div>
+
+                <div class="ps-trust-row">
+                    <span class="ps-trust-chip">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Secure Payment
+                    </span>
+                    <span class="ps-trust-chip">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        Easy Returns
+                    </span>
+                    <span class="ps-trust-chip">
+                        <i class="fa-solid fa-lock"></i>
+                        SSL Protected
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty Cart -->
+    <div class="ps-empty-card ps-reveal">
+        <div class="ps-empty-icon-wrap">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <h3 class="ps-empty-title">Your Cart is Empty</h3>
+        <p class="ps-empty-desc">Looks like you haven't added anything to your cart yet. Explore our curated collection and find something you'll love.</p>
+        <a href="/" class="ps-empty-btn">
+            <span>Start Shopping</span>
+            <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Scroll reveal
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) e.target.classList.add('ps-visible');
+        });
+    }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+
+    document.querySelectorAll('.ps-reveal').forEach(el => revealObs.observe(el));
+
+    // Staggered item reveal
+    const staggerObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const delay = parseInt(getComputedStyle(e.target).getPropertyValue('--d') || '0');
+                e.target.style.transitionDelay = `${delay * 0.08}s`;
+                e.target.classList.add('ps-visible');
+            }
+        });
+    }, { threshold: 0.05 });
+
+    document.querySelectorAll('.ps-stagger').forEach(el => staggerObs.observe(el));
+</script>
+{% endblock %}

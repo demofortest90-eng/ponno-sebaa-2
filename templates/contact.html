@@ -1,0 +1,589 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap');
+
+    :root {
+        --ps-teal: #0d9488;
+        --ps-teal-deep: #0f766e;
+        --ps-teal-dark: #134e4a;
+        --ps-emerald: #059669;
+        --ps-gold: #f59e0b;
+        --ps-gold-light: #fbbf24;
+        --ps-dark: #0c1220;
+        --ps-surface: #f8fafc;
+        --ps-surface-warm: #fefce8;
+        --ps-border: rgba(15, 23, 42, 0.06);
+        --ps-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+        --ps-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+        --ps-shadow-lg: 0 20px 50px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+        --ps-shadow-xl: 0 25px 60px rgba(13,148,136,0.12), 0 10px 25px rgba(0,0,0,0.06);
+        --ps-radius-sm: 10px;
+        --ps-radius-md: 16px;
+        --ps-radius-lg: 22px;
+        --ps-radius-xl: 28px;
+        --ps-transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-fast: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ═══════════════ HERO ═══════════════ */
+    .ps-contact-hero {
+        position: relative;
+        background: var(--ps-dark);
+        padding: 80px 0 120px;
+        overflow: hidden;
+    }
+    .ps-hero-bg {
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal-dark) 0%, var(--ps-dark) 50%, rgba(13,148,136,0.2) 100%);
+    }
+    .ps-hero-pattern {
+        position: absolute; inset: 0; opacity: 0.035;
+        background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+        background-size: 30px 30px;
+    }
+    .ps-hero-glow {
+        position: absolute; border-radius: 50%;
+        filter: blur(100px); pointer-events: none;
+    }
+    .ps-hero-glow-1 {
+        width: 500px; height: 500px;
+        background: var(--ps-teal); top: -250px; right: -100px; opacity: 0.12;
+    }
+    .ps-hero-glow-2 {
+        width: 350px; height: 350px;
+        background: var(--ps-gold); bottom: -150px; left: 10%; opacity: 0.08;
+    }
+    .ps-hero-shine {
+        position: absolute; inset: 0;
+        background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 55%, transparent 60%);
+        background-size: 200% 100%;
+        animation: psShine 5s ease-in-out infinite;
+    }
+    @keyframes psShine {
+        0%, 100% { background-position: 200% 0; }
+        50% { background-position: -100% 0; }
+    }
+
+    /* Floating shapes */
+    .ps-hero-shape {
+        position: absolute; z-index: 1;
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 50%;
+        animation: psFloat 8s ease-in-out infinite;
+    }
+    .ps-shape-1 { width: 90px; height: 90px; top: 30px; left: 8%; animation-delay: 0s; }
+    .ps-shape-2 { width: 55px; height: 55px; bottom: 40px; right: 15%; animation-delay: -3s; }
+    .ps-shape-3 { width: 35px; height: 35px; top: 50%; right: 35%; animation-delay: -5s; border-radius: 8px; transform: rotate(45deg); }
+    @keyframes psFloat {
+        0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.4; }
+        50% { transform: translateY(-18px) rotate(12deg); opacity: 0.9; }
+    }
+
+    .ps-hero-content {
+        position: relative; z-index: 2; text-align: center;
+    }
+    .ps-hero-label {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.62rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ps-gold-light); margin-bottom: 20px;
+    }
+    .ps-hero-label-dot {
+        width: 5px; height: 5px; border-radius: 50%;
+        background: var(--ps-gold);
+    }
+    .ps-hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem; font-weight: 700;
+        color: white; margin: 0 0 16px; line-height: 1.15;
+    }
+    .ps-hero-desc {
+        font-size: 1.05rem; color: rgba(255,255,255,0.5);
+        line-height: 1.7; max-width: 560px; margin: 0 auto;
+    }
+    .ps-hero-desc strong { color: rgba(255,255,255,0.8); }
+    .ps-hero-divider {
+        display: flex; align-items: center; justify-content: center;
+        gap: 12px; margin-top: 28px;
+    }
+    .ps-hero-divider-line {
+        width: 50px; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1));
+    }
+    .ps-hero-divider-line:last-child {
+        background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+    }
+    .ps-hero-divider-diamond {
+        width: 8px; height: 8px; border-radius: 2px;
+        background: var(--ps-gold); transform: rotate(45deg);
+    }
+
+    /* ═══════════════ CONTACT CARD ═══════════════ */
+    .ps-contact-card {
+        background: white;
+        border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border);
+        box-shadow: var(--ps-shadow-xl);
+        overflow: hidden;
+        position: relative; z-index: 10;
+        margin-top: -80px;
+    }
+
+    /* Info Panel */
+    .ps-info-panel {
+        padding: 48px 40px;
+        position: relative;
+    }
+    .ps-info-panel::before {
+        content: ''; position: absolute; right: 0; top: 10%; bottom: 10%;
+        width: 1px; background: var(--ps-border);
+    }
+
+    .ps-info-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0 0 8px;
+    }
+    .ps-info-desc {
+        font-size: 0.88rem; color: #94a3b8;
+        line-height: 1.7; margin: 0 0 36px;
+    }
+
+    .ps-info-item {
+        display: flex; align-items: center; gap: 18px;
+        padding: 18px 0;
+        border-bottom: 1px solid var(--ps-border);
+        transition: var(--ps-transition-fast);
+    }
+    .ps-info-item:last-of-type { border-bottom: none; }
+    .ps-info-item:hover { padding-left: 8px; }
+
+    .ps-info-icon {
+        width: 52px; height: 52px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem; flex-shrink: 0;
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-info-item:hover .ps-info-icon { transform: rotate(-10deg) scale(1.08); }
+    .ps-ii-teal {
+        background: rgba(13,148,136,0.08);
+        color: var(--ps-teal);
+        border: 1px solid rgba(13,148,136,0.06);
+    }
+    .ps-ii-gold {
+        background: rgba(245,158,11,0.08);
+        color: var(--ps-gold);
+        border: 1px solid rgba(245,158,11,0.06);
+    }
+    .ps-ii-emerald {
+        background: rgba(5,150,105,0.08);
+        color: var(--ps-emerald);
+        border: 1px solid rgba(5,150,105,0.06);
+    }
+
+    .ps-info-label {
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.15em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 3px;
+    }
+    .ps-info-value {
+        font-size: 0.92rem; font-weight: 700; color: var(--ps-dark);
+    }
+    .ps-info-value a {
+        color: var(--ps-dark); text-decoration: none;
+        transition: var(--ps-transition-fast);
+    }
+    .ps-info-value a:hover { color: var(--ps-teal); }
+
+    /* Social Links */
+    .ps-social-section {
+        margin-top: 36px; padding-top: 28px;
+        border-top: 1px solid var(--ps-border);
+    }
+    .ps-social-label {
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 16px;
+    }
+    .ps-social-btn {
+        width: 44px; height: 44px; border-radius: 12px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--ps-surface);
+        border: 1px solid var(--ps-border);
+        color: #94a3b8; text-decoration: none;
+        font-size: 0.95rem; transition: var(--ps-transition);
+        margin-right: 10px;
+    }
+    .ps-social-btn:hover {
+        transform: translateY(-4px) rotate(-5deg);
+        box-shadow: var(--ps-shadow-md);
+    }
+    .ps-social-btn.fb:hover { background: #1877f2; color: white; border-color: #1877f2; }
+    .ps-social-btn.wa:hover { background: linear-gradient(135deg, #25d366, #128c7e); color: white; border-color: transparent; }
+    .ps-social-btn.ig:hover { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; border-color: transparent; }
+    .ps-social-btn.tk:hover { background: #010101; color: white; border-color: #010101; }
+
+    /* ═══════════════ FORM PANEL ═══════════════ */
+    .ps-form-panel {
+        padding: 48px 40px;
+        background: var(--ps-surface);
+        position: relative;
+    }
+    .ps-form-panel::before {
+        content: ''; position: absolute; inset: 0;
+        background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 0);
+        background-size: 24px 24px;
+    }
+
+    .ps-form-header {
+        position: relative; margin-bottom: 32px;
+    }
+    .ps-form-tag {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--ps-teal); margin-bottom: 10px;
+    }
+    .ps-form-tag-line {
+        width: 20px; height: 2px; border-radius: 2px;
+        background: var(--ps-teal);
+    }
+    .ps-form-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0;
+    }
+
+    .ps-field-label {
+        display: block; font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 10px;
+    }
+    .ps-input {
+        width: 100%; padding: 14px 18px;
+        background: white;
+        border: 2px solid transparent;
+        border-radius: var(--ps-radius-sm);
+        font-size: 0.9rem; font-weight: 600; color: var(--ps-dark);
+        transition: var(--ps-transition);
+        outline: none;
+        box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-input::placeholder { color: #cbd5e1; font-weight: 400; }
+    .ps-input:hover { border-color: rgba(13,148,136,0.15); }
+    .ps-input:focus {
+        border-color: var(--ps-teal);
+        box-shadow: 0 0 0 4px rgba(13,148,136,0.08), var(--ps-shadow-sm);
+    }
+    textarea.ps-input { resize: none; min-height: 140px; line-height: 1.7; }
+
+    .ps-btn-send {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 56px;
+        border: none; border-radius: var(--ps-radius-md);
+        background: var(--ps-dark); color: white;
+        font-size: 0.9rem; font-weight: 800;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+    }
+    .ps-btn-send::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-teal), var(--ps-emerald));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-btn-send span, .ps-btn-send i { position: relative; z-index: 1; }
+    .ps-btn-send:hover::before { opacity: 1; }
+    .ps-btn-send:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(13,148,136,0.3);
+        color: white;
+    }
+    .ps-send-icon {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.75rem;
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-btn-send:hover .ps-send-icon { transform: translateX(4px) rotate(-15deg); }
+
+    /* ═══════════════ FAQ SECTION ═══════════════ */
+    .ps-faq-section {
+        margin-top: 80px;
+    }
+    .ps-faq-header {
+        text-align: center; margin-bottom: 48px;
+    }
+    .ps-faq-tag {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.62rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ps-gold); padding: 6px 16px;
+        background: var(--ps-surface-warm);
+        border-radius: 50px; border: 1px solid rgba(245,158,11,0.12);
+        margin-bottom: 16px;
+    }
+    .ps-faq-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem; font-weight: 700;
+        color: var(--ps-dark); margin: 0;
+    }
+
+    .ps-faq-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .ps-faq-item {
+        background: white; border-radius: var(--ps-radius-lg);
+        border: 1px solid var(--ps-border);
+        padding: 28px; transition: var(--ps-transition);
+        box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-faq-item:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--ps-shadow-md);
+        border-color: rgba(13,148,136,0.15);
+    }
+    .ps-faq-icon {
+        width: 44px; height: 44px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.95rem; margin-bottom: 16px;
+    }
+    .ps-faq-q {
+        font-size: 0.92rem; font-weight: 700; color: var(--ps-dark);
+        margin: 0 0 8px; line-height: 1.5;
+    }
+    .ps-faq-a {
+        font-size: 0.82rem; color: #94a3b8; line-height: 1.7;
+        margin: 0;
+    }
+
+    /* ═══════════════ REVEAL ═══════════════ */
+    .ps-reveal {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .ps-reveal.ps-visible { opacity: 1; transform: translateY(0); }
+    .ps-reveal-delay-1 { transition-delay: 0.1s; }
+    .ps-reveal-delay-2 { transition-delay: 0.2s; }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .ps-hero-title { font-size: 2.2rem; }
+        .ps-contact-hero { padding: 60px 0 100px; }
+        .ps-contact-card { margin-top: -60px; }
+        .ps-info-panel { padding: 36px 28px; }
+        .ps-info-panel::before { display: none; }
+        .ps-form-panel { padding: 36px 28px; }
+        .ps-faq-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 767px) {
+        .ps-contact-hero { padding: 48px 0 80px; border-radius: 0; }
+        .ps-hero-title { font-size: 1.7rem; }
+        .ps-hero-desc { font-size: 0.9rem; }
+        .ps-hero-shape { display: none; }
+        .ps-contact-card { margin-top: -48px; border-radius: var(--ps-radius-lg); }
+        .ps-info-panel { padding: 28px 20px; }
+        .ps-form-panel { padding: 28px 20px; }
+        .ps-info-title { font-size: 1.3rem; }
+        .ps-form-title { font-size: 1.2rem; }
+        .ps-info-item { gap: 14px; padding: 14px 0; }
+        .ps-info-icon { width: 46px; height: 46px; font-size: 1rem; border-radius: 14px; }
+        .ps-btn-send { height: 52px; font-size: 0.85rem; }
+        .ps-faq-section { margin-top: 56px; }
+        .ps-faq-title { font-size: 1.4rem; }
+        .ps-faq-item { padding: 22px; }
+    }
+</style>
+
+<!-- Hero -->
+<div class="ps-contact-hero">
+    <div class="ps-hero-bg"></div>
+    <div class="ps-hero-pattern"></div>
+    <div class="ps-hero-glow ps-hero-glow-1"></div>
+    <div class="ps-hero-glow ps-hero-glow-2"></div>
+    <div class="ps-hero-shine"></div>
+    <div class="ps-hero-shape ps-shape-1"></div>
+    <div class="ps-hero-shape ps-shape-2"></div>
+    <div class="ps-hero-shape ps-shape-3"></div>
+    <div class="ps-hero-content ps-reveal">
+        <div class="ps-hero-label">
+            <span class="ps-hero-label-dot"></span>
+            Get in Touch
+        </div>
+        <h1 class="ps-hero-title">Connect With Us</h1>
+        <p class="ps-hero-desc">Have a question about a product or your order? Our team at <strong>Ponno Sebaa</strong> is here to help you.</p>
+        <div class="ps-hero-divider">
+            <div class="ps-hero-divider-line"></div>
+            <div class="ps-hero-divider-diamond"></div>
+            <div class="ps-hero-divider-line"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Card -->
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="ps-contact-card ps-reveal">
+                <div class="row g-0">
+                    <!-- Info Panel -->
+                    <div class="col-lg-5">
+                        <div class="ps-info-panel">
+                            <h3 class="ps-info-title">Contact Information</h3>
+                            <p class="ps-info-desc">Fill out the form and our team will get back to you within 24 hours.</p>
+
+                            <div class="ps-info-item">
+                                <div class="ps-info-icon ps-ii-teal">
+                                    <i class="fa-solid fa-phone-volume"></i>
+                                </div>
+                                <div>
+                                    <div class="ps-info-label">Call Center</div>
+                                    <div class="ps-info-value">
+                                        <a href="tel:+8801400461284">+880 1400 461284</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ps-info-item">
+                                <div class="ps-info-icon ps-ii-gold">
+                                    <i class="fa-solid fa-envelope-open-text"></i>
+                                </div>
+                                <div>
+                                    <div class="ps-info-label">Email Address</div>
+                                    <div class="ps-info-value">
+                                        <a href="mailto:ponnoSebaa@gmail.com">ponnoSebaa@gmail.com</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ps-info-item">
+                                <div class="ps-info-icon ps-ii-emerald">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <div class="ps-info-label">Main Hub</div>
+                                    <div class="ps-info-value">Bogura, Bangladesh</div>
+                                </div>
+                            </div>
+
+                            <div class="ps-info-item">
+                                <div class="ps-info-icon ps-ii-teal">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </div>
+                                <div>
+                                    <div class="ps-info-label">WhatsApp</div>
+                                    <div class="ps-info-value">
+                                        <a href="https://wa.me/+8801400461284" target="_blank">Chat with Us</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ps-social-section">
+                                <div class="ps-social-label">Follow Our Socials</div>
+                                <div class="d-flex flex-wrap">
+                                    <a href="https://www.facebook.com/share/1CacPZ3z2G/" class="ps-social-btn fb" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                                    <a href="https://wa.me/+8801400461284" class="ps-social-btn wa" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                                    <a href="https://www.instagram.com/PonnoSebaabd?igsh=ZHczZG9oXIw" class="ps-social-btn ig" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                                    <a href="https://www.tiktok.com/@PonnoSebaabd1?_r=1&_t=ZS-956vqeRO3RC" class="ps-social-btn tk" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Panel -->
+                    <div class="col-lg-7">
+                        <div class="ps-form-panel">
+                            <div class="ps-form-header">
+                                <div class="ps-form-tag">
+                                    <div class="ps-form-tag-line"></div>
+                                    <span>Send a Message</span>
+                                </div>
+                                <h4 class="ps-form-title">We'd Love to Hear From You</h4>
+                            </div>
+
+                            <form action="/contact" method="POST" style="position: relative;">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="ps-field-label">Full Name</label>
+                                        <input type="text" name="name" class="ps-input" placeholder="e.g. Abdullah Al Mamun" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="ps-field-label">Email Address</label>
+                                        <input type="email" name="email" class="ps-input" placeholder="example@mail.com" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="ps-field-label">Subject</label>
+                                        <input type="text" name="subject" class="ps-input" placeholder="How can we help?" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="ps-field-label">Message</label>
+                                        <textarea name="message" class="ps-input" placeholder="Write your message here..." required></textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" class="ps-btn-send mt-4">
+                                    <span>Send Enquiry</span>
+                                    <span class="ps-send-icon"><i class="fa-solid fa-paper-plane"></i></span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="ps-faq-section ps-reveal">
+        <div class="ps-faq-header">
+            <div class="ps-faq-tag">
+                <i class="fa-solid fa-circle-question" style="font-size: 0.55rem;"></i>
+                Common Questions
+            </div>
+            <h2 class="ps-faq-title">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="ps-faq-grid">
+            <div class="ps-faq-item">
+                <div class="ps-faq-icon ps-ii-teal">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <h6 class="ps-faq-q">How long does delivery take?</h6>
+                <p class="ps-faq-a">We typically deliver within 2-5 business days across Bangladesh, depending on your location.</p>
+            </div>
+            <div class="ps-faq-item">
+                <div class="ps-faq-icon ps-ii-gold">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </div>
+                <h6 class="ps-faq-q">Can I return or exchange a product?</h6>
+                <p class="ps-faq-a">Yes, we accept returns within 3 days of delivery if the product is unused and in original packaging.</p>
+            </div>
+            <div class="ps-faq-item">
+                <div class="ps-faq-icon ps-ii-emerald">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h6 class="ps-faq-q">Are all products authentic?</h6>
+                <p class="ps-faq-a">Absolutely. We source directly from authorized distributors to guarantee 100% genuine products.</p>
+            </div>
+            <div class="ps-faq-item">
+                <div class="ps-faq-icon ps-ii-teal">
+                    <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <h6 class="ps-faq-q">What payment methods do you accept?</h6>
+                <p class="ps-faq-a">We accept Cash on Delivery, bKash, and Nagad for a seamless and secure checkout experience.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('ps-visible'); });
+    }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+    document.querySelectorAll('.ps-reveal').forEach(el => revealObs.observe(el));
+</script>
+{% endblock %}

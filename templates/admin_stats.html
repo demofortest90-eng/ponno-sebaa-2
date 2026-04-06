@@ -1,0 +1,158 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<style>
+    :root {
+        --brand-teal: #1c6b6b;
+        --brand-gold: #d4a044;
+        --brand-dark: #0d2b2b;
+    }
+
+    .text-teal { color: var(--brand-teal); }
+    .bg-soft-teal { background-color: rgba(28, 107, 107, 0.08); }
+    .bg-soft-gold { background-color: rgba(212, 160, 68, 0.1); }
+    
+    .product-card-img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px solid #f1f5f5;
+    }
+
+    .stat-badge {
+        font-size: 11px;
+        padding: 5px 10px;
+        font-weight: 600;
+        border: 1px solid transparent;
+    }
+
+    .quick-input {
+        background-color: #f8fafc !important;
+        border: 1.5px solid #e2e8f0 !important;
+        font-size: 13px !important;
+        padding-left: 8px !important;
+    }
+
+    .quick-input:focus {
+        border-color: var(--brand-teal) !important;
+        background-color: #fff !important;
+        box-shadow: none !important;
+    }
+
+    .btn-save-round {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--brand-teal);
+        border: none;
+        color: white;
+        transition: 0.3s;
+    }
+
+    .btn-save-round:hover {
+        background-color: var(--brand-dark);
+        transform: scale(1.1);
+    }
+
+    .table thead th {
+        background-color: #f1f5f5;
+        color: var(--brand-teal);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 10px;
+        letter-spacing: 1px;
+        padding: 15px 10px;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h4 class="fw-bold mb-0 text-navy">Product <span class="text-teal">Performance</span></h4>
+            <p class="text-muted small mb-0">Live management of social proof, sales counters, and logistics costs.</p>
+        </div>
+        <div class="d-flex align-items-center bg-white p-2 px-3 rounded-pill shadow-sm border border-light">
+            <div class="bg-brand-teal rounded-circle me-2" style="width: 10px; height: 10px;"></div>
+            <span class="text-muted small me-1">Catalog Size:</span> 
+            <span class="fw-bold text-teal">{{ products|length }} Items</span>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Product Details</th>
+                        <th>Metrics Visibility</th>
+                        <th>Dynamic Update</th>
+                        <th class="text-end pe-4">Catalog</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in products %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="{{ p.main_image }}" class="product-card-img shadow-sm">
+                                <div>
+                                    <div class="fw-bold text-dark text-truncate" style="max-width: 200px;">{{ p.title }}</div>
+                                    <div class="text-muted font-monospace" style="font-size: 10px;">REF: {{ p._id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge stat-badge bg-soft-gold text-dark border-warning border-opacity-25 rounded-pill">
+                                    <i class="fa-solid fa-star text-warning me-1"></i> {{ p.rating if p.rating else '4.9' }}
+                                </span>
+                                <span class="badge stat-badge bg-soft-teal text-teal border-teal border-opacity-10 rounded-pill">
+                                    <i class="fa-solid fa-fire-flame-curved me-1"></i> {{ p.sold_count if p.sold_count else '120+' }}
+                                </span>
+                                <span class="badge stat-badge bg-light text-muted border rounded-pill">
+                                    <i class="fa-solid fa-truck-fast me-1"></i> ৳{{ p.delivery_charge if p.delivery_charge else '0' }}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <form action="/admin/update_stats/{{ p._id }}" method="POST" class="d-flex gap-2 align-items-center">
+                                <div class="input-group input-group-sm" style="width: 85px;">
+                                    <span class="input-group-text bg-white border-end-0 text-muted" style="font-size: 9px;"><i class="fa-solid fa-star"></i></span>
+                                    <input type="number" name="rating" step="0.1" max="5" min="1" 
+                                           class="form-control quick-input border-start-0 ps-0 fw-bold" 
+                                           value="{{ p.rating if p.rating else 4.9 }}">
+                                </div>
+                                
+                                <div class="input-group input-group-sm" style="width: 100px;">
+                                    <span class="input-group-text bg-white border-end-0 text-muted" style="font-size: 9px;"><i class="fa-solid fa-chart-line"></i></span>
+                                    <input type="text" name="sold_count" class="form-control quick-input border-start-0 ps-0 fw-bold" 
+                                           value="{{ p.sold_count if p.sold_count else '120+' }}">
+                                </div>
+                                
+                                <div class="input-group input-group-sm" style="width: 105px;">
+                                    <span class="input-group-text bg-white border-end-0 text-muted" style="font-size: 9px;">৳</span>
+                                    <input type="number" name="delivery_charge" class="form-control quick-input border-start-0 ps-0 fw-bold text-teal" 
+                                           value="{{ p.delivery_charge if p.delivery_charge else 0 }}" placeholder="Ship">
+                                </div>
+
+                                <button type="submit" class="btn btn-save-round rounded-pill shadow-sm" title="Apply Changes">
+                                    <i class="fa-solid fa-floppy-disk"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="/product/{{ p._id }}" target="_blank" class="btn btn-sm btn-white border rounded-pill px-3 shadow-sm text-muted fw-bold x-small">
+                                <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> VIEW
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
