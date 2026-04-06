@@ -1,0 +1,5 @@
+ADMIN_PASS=123
+ADMIN_USER=admin
+MONGO_URI="mongodb+srv://texlablog_db_user:1buBUXPsE1CBo1Re@testforcustomers.mlm5xxn.mongodb.net/PonnoSebaa?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"
+SECRET_KEY=supersecretkey
+
